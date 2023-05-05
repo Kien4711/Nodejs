@@ -10,11 +10,11 @@
     <script src="https://kit.fontawesome.com/e7cea346e1.js" crossorigin="anonymous"></script>
     <!-- <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link type="text/css" rel="stylesheet" href="/stylesheets/style.css">
+    <link type="text/css" rel="stylesheet" href="stylesheets/style.css">
     <title>Home</title>
 </head>
 
-<body data-tittle="home-email">
+<body data-tittle="home-detail-email">
     <div class="sidebar">
         <div class="sidebar-brand">
             <h2><span class="fa fa-envelope"></span>Mailer</h2>
@@ -92,8 +92,12 @@
 
 
 
-    <main class="home-main">
+    <main class="main-content-mail-detail">
         <div class="sub-header">
+            <span><button type="button" class="fa fa-arrow-left btnDetailMail-back-to-home">  </button></span>
+            <span><button type="button" class="fa fa-exclamation-circle btnDeatilMail-spam"></button></span>
+            <span><button type="button" class="fa fa-trash-o btnDeatilMail-delete"></button></span>
+            <span><button type="button" class="fa fa-tags btnDeatilMail-add-labels"></button></span>
             <span class="directional">
                 <span>
                     <a href="#" class="back-to-page">
@@ -108,27 +112,53 @@
                 </span>
             </span>
         </div>
-
-        <% emailsToUser.forEach((email)=> { %>
-            <div class="email-zoom-out">
-                <input type="checkbox" name="selected-email" id="checkbox-Selected-Email">
-                <span><button type="button" class="fa fa-star-o btnDetailMail-star"></button></span>
-                <a href="#" class="email-content">
-                    <span>
-                        <%= email.from %>
-                    </span>
-                    <span class="email-sub-content">
-                        <%= email.text %>
-                    </span>
-                    <span class="date-email">
-                        <%= email.sentAt %>
-                    </span>
-                </a>
+        <div class="mail-detail-container">
+            <div class="mail-detail-header">
+                <h3>LỜI MỜI THỰC HIỆN KHẢO SÁT</h3>
+                <div><button class="btn-label-of-mail" >inbox</button></div>
             </div>
-            <% }); %>
-
-
+            <div class="mail-detail-main">
+                <div class="main-detail-sub-header">
+                    <img src="../images/meiko.png" alt="">
+                    <div class="inf-of-send-mail">
+                        <span>
+                            <span class="username">Dương Gia Long</span>
+                            <span>"<"72000092@student.tdtu.edu.vn">"</span>
+                        </span>
+                        <span class="infor-mail-sender">to bcc: 520H0520</span>
+                    </div>
+                    <div class="time-to-send-mail">May 4, 2023, 11:12AM (1 day ago)</div>
+                    <span><button type="button" class="fa fa-star-o btnDetailMail-star"></button></span>
+                    <span><button type="button" class="fa fa-reply btnDetailMail-reply-extra"></button></span>
                 </div>
+                <div class="main-detail-content">
+                    <div class="content-of-mail">
+                        Thân chào bạn,
+
+                        Hiện tại, nhóm chúng mình đang thực hiện nghiên cứu đề tài "Ảnh hưởng của trí tuệ cảm xúc đến lòng trung thành thương hiệu của người học đối với các trường Đại học tại  Việt Nam".
+
+                        Chúng mình thật lòng hy vọng sẽ nhận được sự hỗ trợ hết mình từ bạn bằng cách điền vào mẫu khảo sát của nhóm. Điều này sẽ mất khoảng 8-10 phút của bạn. Nhóm chúng mình biết điều này sẽ khó khăn cho bạn vì độ dài của khảo sát nhưng nhóm vẫn luôn hy vọng bạn sẽ đồng hành và giúp nhóm mình có được kết quả tốt nhất cho dự án nghiên cứu lần này.
+
+                        Để truy cập vào mẫu khảo sát, bạn có thể click vào đường link sau:
+                        https://forms.gle/WMDcsz8CT5ewAXnw8
+
+                        Nếu bạn có bất kỳ câu hỏi hoặc đóng góp nào liên quan đến dự án nghiên cứu, xin vui lòng liên hệ với mình qua địa chỉ email này. Sự đóng góp của bạn sẽ góp phần cho chúng mình hoàn thiện đề tài nghiên cứu này hơn bao giờ hết.
+
+                        Thay mặt nhóm, mình xin chân thành cảm ơn sự hỗ trợ của bạn. Đồng thời, nhóm hy vọng với sự đóng góp của bạn, dự án nghiên cứu của nhóm sẽ có được kết quả tốt nhất.
+                    </div>
+                    <div class="line"></div>
+                    <div class="container-btn-send-and-forward">
+                        <div><button type="button" class="fa fa-reply btnDetailMail-reply-main"><span>Reply</span></button></div>
+                        <div><button type="button" class="fa fa-share btnDetailMail-forward-main"><span>Forward</span></button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        </div>
     </main>
     <div class="user-menu display-menu-user">
         <table>
@@ -181,7 +211,7 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="/javascripts/main.js"></script>
+<script type="text/javascript" src="/javascripts/detailMail.js"></script>
 
 
 </html>
