@@ -851,3 +851,170 @@ i.fa.fa-times {
   display: none;
 }
 
+/* ----------------------------------CHANGE PASSWORD -----------------------------------------*/
+.changepassword form {
+  padding: 0 15px;
+  position: relative;
+}
+
+.changepassword input {
+  width: 280px;
+}
+
+.changepassword label {
+  display: flex;
+}
+
+#btn-changepassword {
+  margin-top: 18px;
+  border-radius: 40px;
+  margin-bottom: 18px;
+  width: 112px;
+  padding: 10px 25px;
+  position: absolute;
+  bottom: -90px;
+  right: 15px;
+}
+
+.title-changepass {
+  margin-left: 15px;
+  padding-bottom: 15px;
+}
+
+
+/* --------------------------------------------PROFILE-------------------------------------------- */
+
+.profile {
+  width: 70%;
+  padding: 10px;
+  border-radius: 20px;
+  background: #fff;
+  height: 690px;
+  top: 15px;
+  position: relative;
+  box-shadow: 20px 20px 10px grey;
+}
+
+.sidebar-profile {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  padding: 15px 30px;
+}
+
+.sidebar-profile h3 {
+  font-weight: 600;
+}
+
+.sidebar-profile span {
+  padding-bottom: 30px;
+}
+
+.sidebar-profile a {
+  text-decoration: none;
+  padding: 5px 0;
+  font-weight: 600;
+  color: #212529;
+}
+
+.profile-focus {
+  color: #ff2600 !important;
+  font-weight: 700 !important;
+}
+.main-profile {
+  width: 75%;
+  margin-left: 23%;
+  position: relative;
+  top: -80px;
+}
+
+.main-profile input {
+  border: 1.5px solid grey;
+  background: white;
+  height: 35px;
+  width: 500px;
+  border-radius: 6px;
+}
+
+.main-profile form {
+  padding: 0 15px !important;
+  align-items: flex-start;
+}
+
+.manage-avatar {
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 25px;
+}
+
+.manage-avatar img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+#delete-button {
+  background: white;
+  color: black;
+  width: 25px;
+  font-size: 14px;
+  height: 35px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 600;
+  border: 1.5px solid #212529;
+  position: relative;
+  top: 32px;
+  left: 40px;
+}
+
+#delete-button:hover {
+  background-color: rgb(189, 189, 189);
+  color: white;
+  border: none;
+}
+
+.btn-select-file {
+  background: #FF4B2B;
+  color: white;
+  width: 25px;
+  height: 35px;
+  font-size: 14px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 600;
+  border: none;
+  position: relative;
+  top: 32px;
+  left: 25px;
+}
+
+.btn-select-file:hover {
+  opacity: 0.8;
+}
+
+#image-input {
+  display: none;
+}
+
+.btn-save-edit-profile {
+  width: 130px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.btn-save-edit-profile:hover{
+  opacity: 0.8;
+}
+
+.main-profile input:focus-visible {
+  border: 2px solid rgb(52, 126, 255);
+}
