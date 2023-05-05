@@ -8,6 +8,7 @@
     const btnCloseLabelBox = document.querySelector('.btn-close-label-box')
     const btnCancelLabelBox = document.querySelector('.btn-cancel-label')
     const linkToProfile = document.getElementById("profile-link")
+    const btnDetailMail = document.querySelector('.btnDetailMail-star')
 
     btnWriteMail.addEventListener('click', () => {
         mailBox.classList.remove("display-mail-box");
@@ -51,3 +52,18 @@
         event.preventDefault(); // Ngăn chặn chuyển hướng đến trang khác khi click vào link
         window.location.href = "/profile"; // Chuyển hướng đến trang profile của người dùng đang đăng nhập
     });
+
+
+let isStar = false;
+btnDetailMail.addEventListener('click', () => {
+    if(isStar) {
+        btnDetailMail.classList.remove('fa-star-o');
+        btnDetailMail.classList.add('fa-star')
+        isStar = false;
+    }
+    else {
+        btnDetailMail.classList.remove('fa-star');
+        btnDetailMail.classList.add('fa-star-o')
+        isStar = true;
+    }
+})
