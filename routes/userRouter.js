@@ -113,12 +113,15 @@ router.post('/login', loginValidator, async (req, res) => {
 
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res.status(401).json({ code: 1, message: 'No user found with this email' });
+      req.flash('error', 'No user found with this email')
+      return res.redirect('/login');
     }
 
     const match = await bcrypt.compare(req.body.password, user.password);
     if (!match) {
-      return res.status(401).json({ code: 2, message: 'Incorrect password' });
+      req.flash('error', 'Incorrect password')
+      return res.redirect('/login');
+
     }
 
     // Login successful
@@ -126,7 +129,6 @@ router.post('/login', loginValidator, async (req, res) => {
     req.session.isLoggedIn = true;
     console.log('test ' + req.session.user.email);
     res.redirect('home');
-    //   return res.status(200).json({ code: 0, message: 'Login successful' });
   } catch (err) {
     return res.status(500).json({ code: 3, message: 'Internal server error' });
   }
@@ -164,7 +166,10 @@ router.post('/register', registerValidator, async (req, res) => {
   try {
     const user = await User.findOne({ email: email });
     if (user) {
-      return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
+      req.flash('error', 'User already exists')
+
+    return res.redirect('/register');
+      
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);

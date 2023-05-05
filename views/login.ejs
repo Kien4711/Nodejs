@@ -60,17 +60,16 @@
                 </div>
                 <!-- Thêm vùng hiển thị lỗi -->
                 <div class="form-group">
-                  <% if (error.length > 0) { %>
+                  <% if (error.length> 0) { %>
                     <div class="alert alert-danger alert-dismissible fade show">
                       <button type="button" class="close" data-dismiss="alert">&times;</button>
                       <%= error %>
                     </div>
-                 <% } %>
-              </div>
-                    <input type="submit" value="Log In" class="btn btn-block btn-primary btn-login">
-                    <span class=" d-sm-flex mt-3 justify-content-center">Don't have an account? <a class="ms-2"
-                        href="register">Register</a></span>
-
+                    <% } %>
+                </div>
+                <input type="submit" value="Log In" class="btn btn-block btn-primary btn-login">
+                <span class=" d-sm-flex mt-3 justify-content-center">Don't have an account? <a class="ms-2"
+                    href="register">Register</a></span>
               </form>
             </div>
           </div>
