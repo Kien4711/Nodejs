@@ -10,6 +10,7 @@ const moment = require('moment')
 const multer = require('multer');
 const path = require('path')
 const session = require('express-session')
+const flash = require('connect-flash');
 
 //validator form
 const { check, validationResult } = require('express-validator')
@@ -40,6 +41,8 @@ router.use(session({
   cookie: { maxAge: 10 * 60 * 1000 } // Thời gian sống của cookie là 10 phút
 }))
 
+router.use(flash())
+
 //function send OTP
 const accountSid = process.env.twilio_ACCOUNT_SID
 const authToken = process.env.twilio_AUTH_TOKEN
@@ -62,6 +65,7 @@ async function sendOTP(phoneNumber, otp) {
 }
 
 const { v4: uuidv4 } = require('uuid');
+const exp = require('constants');
 
 function generateUserId() {
   return uuidv4();
@@ -76,14 +80,28 @@ router.get('/', function (req, res) {
 
 ////////////////////login//////////////////////////////////////////////////////
 router.get('/login', loginValidator, function (req, res) {
-  res.render('login')
+  const error = req.flash('error') || ''
+
+  res.render('login', { error })
 })
 
 router.post('/login', loginValidator, async (req, res) => {
   const result = validationResult(req);
 
   if (!result.isEmpty()) {
-    return res.status(422).json({ code: 4, message: result });
+
+    const mappedResult = result.mapped()
+
+    let message;
+    for (fields in mappedResult) {
+      message = mappedResult[fields].msg
+      console.log(message)
+      break;
+    }
+
+    req.flash('error', message)
+
+    return res.redirect('/login');
   }
 
   try {
@@ -117,8 +135,8 @@ router.post('/login', loginValidator, async (req, res) => {
 ///////////////////register/////////////////////////////////////////////////////////////
 
 router.get('/register', registerValidator, (req, res) => {
-
-  res.render('register')
+  const error = req.flash('error') || ''
+  res.render('register', { error })
 })
 
 
@@ -126,7 +144,19 @@ router.post('/register', registerValidator, async (req, res) => {
   const result = validationResult(req);
 
   if (!result.isEmpty()) {
-    return res.status(400).json({ errors: result.errors });
+
+    const mappedResult = result.mapped()
+
+    let message;
+    for (fields in mappedResult) {
+      message = mappedResult[fields].msg
+      console.log(message)
+      break;
+    }
+
+    req.flash('error', message)
+
+    return res.redirect('/register');
   }
 
   const { username, email, phone, password, address, fullname, birthday } = req.body;
@@ -211,11 +241,7 @@ router.post('/change-password', async (req, res) => {
 /////////////////////////////////////////////////////////////////////
 router.get('/home', (req, res) => {
   if (req.session.isLoggedIn) {
-    console.log('correct')
-
     res.render('home')
-
-    console.log('correct' + req.session.user.fullname)
   }
   else {
     res.redirect('/login');
@@ -323,8 +349,6 @@ router.post('/change-password', (req, res) => {
 router.post("/send-email", async (req, res) => {
   if (req.session.isLoggedIn) {
     const { to, subject, text } = req.body;
-
-    
     const newEmail = new Email({
       from: req.session.user.email,
       to: to,
@@ -341,18 +365,30 @@ router.post("/send-email", async (req, res) => {
 });
 
 
-router.get("/get-email", (req, res) => {
+router.get("/get-send-email", async (req, res) => {
   if (req.session.isLoggedIn) {
-    
+    const emailsFrom = await Email.find({ from: req.session.user.email });
+    console.log(emailsFrom); // Output: an array of Email documents where the 'from' field is 'kien09@gmail.com'
     res.redirect('/home');
- 
   }
   else {
-  
     res.redirect('/login');
   }
-
 });
+
+router.get("/get-email", async (req, res) => {
+
+  if (req.session.isLoggedIn) {
+    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } });
+    console.log(emailsToUser);
+    res.redirect('/home');
+  }
+  else {
+    res.redirect('/login');
+    console.log('error');
+
+  }
+})
 
 
 // Handle POST request to /edit-profile

@@ -72,7 +72,14 @@
                     <label for="username">Repassword</label>
                     <input name="repassword" type="text" class="form-control form-control-signup" placeholder="Repassword" id="repassword">
                   </div>
-
+                  <div class="form-group">
+                    <% if (error.length > 0) { %>
+                        <div class="alert alert-danger alert-dismissible fade show">
+                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          <%= error %>
+                        </div>
+                    <% } %>
+                  </div>
                 <input type="submit" value="Register" class="btn btn-block btn-primary btn-login">
                 <span class=" d-sm-flex mt-3 justify-content-center">Already have an account? <a class="ms-2" href="login">Login</a></span>
 
