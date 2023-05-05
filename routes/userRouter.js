@@ -205,11 +205,10 @@ router.get('/change-password', (req, res) => {
 //////////////////chang password//////////////
 router.post('/change-password', async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
-  const userId = req.session.userId;
 
   try {
     // Find the user
-    const user = await User.findOne(userId)
+    const user = await User.findOne(req.session.user)
 
     // Check if the old password is correct
     const isMatch = await bcrypt.compare(oldPassword, user.password)
@@ -226,7 +225,7 @@ router.post('/change-password', async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10)
 
     // Update the user's password in the database
-    await User.findByIdAndUpdate(userId, { password: hashedPassword })
+    await User.findOneAndUpdate({ email: user.email }, { password: hashedPassword })
 
     // Delete the session and redirect to login page
     req.session.destroy(err => {
@@ -297,15 +296,7 @@ router.get('/sended',async (req, res) => {
     res.redirect('/login');
   }
 })
-////////////////////////////Draft//////////////////////////////////////////
-router.get('/home/draft', (req, res) => {
 
-  res.render('home')
-})
-router.post('/home/draft', (req, res) => {
-
-  res.render('home')
-})
 ////////////profile/////////////////////
 router.get('/profile', async (req, res) => {
   try {
@@ -409,34 +400,49 @@ router.get("/get-email", async (req, res) => {
 
 ///////////////////edit-profile////////
 // Handle POST request to /edit-profile
-router.post("/edit-profile", (req, res) => {
-  // Get the current user from the session
-  const user = req.session.user;
+router.post("/edit-profile", async (req, res) => {
+  try {
+    // Get the current user from the session
+    const user = req.session.user;
 
-  // Get the new values for fullname, phone, address and birthday from the request body
-  const { fullname, phone, address, birthday } = req.body;
+    // Get the new values for fullname, phone, address and birthday from the request body
+      const { fullname, phone, address, birthday } = req.body;
 
-  // Update the user in the database with the new values
-  User.findByIdAndUpdate(
-    user.userId,
-    {
-      fullname: fullname,
-      phone: phone,
-      address: address,
-      birthday: birthday,
-    },
-    { new: true },
-    (err, updatedUser) => {
-      if (err) {
-        console.log(err);
-        res.status(500).send("Internal Server Error");
-      } else {
-        // Update the user in the session
-        req.session.user = updatedUser;
-        res.redirect("/profile");
+      // Create an object to store the new values for the user
+      const newValues = {};
+
+      if (fullname) {
+        newValues.fullname = fullname;
       }
-    });
-});
+      if (phone) {
+        newValues.phone = phone;
+      }
+      if (address) {
+        newValues.address = address;
+      }
+      if (birthday) {
+        newValues.birthday = birthday;
+      }
+
+      // Update the user in the database with the new values
+      const updatedUser = await User.findOneAndUpdate(
+        { email: user.email },
+        newValues,
+        { new: true }
+      );
+
+    if (!updatedUser) {
+      return res.status(404).send("User not found");
+    }
+
+    // Update the user in the session
+    req.session.user = updatedUser;
+    res.redirect("/profile");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal Server Error");
+  }
+})
 
 // Render the edit profile page
 router.get("/edit-profile", (req, res) => {
@@ -446,6 +452,7 @@ router.get("/edit-profile", (req, res) => {
   // Render the edit profile page with the user object
   res.render("edit-profile", { user: user });
 });
+
 
 
 

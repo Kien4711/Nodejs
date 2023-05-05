@@ -28,18 +28,15 @@
                         <button type="button" class="btn-select-file" onclick="document.getElementById('image-input').click();">Upload</button>
                         <button type="button" id="delete-button">Delete</button>
                     </div>
-                    <label for="fullname">Full Name:</label>
-                    <!-- <%= user.fullname %> -->
-                    <input type="text" name="fullname" value=""><br>
-                    <label for="phone">Phone:</label>
-                    <!-- <%= user.phone %> -->
-                    <input type="text" name="phone" value=""><br>
-                    <label for="address">Address:</label>
-                    <!-- <%= user.address %> -->
-                    <input type="text" name="address" value=""><br>
-                    <label for="birthday">Birthday:</label>
-                    <!-- <%= user.birthday.toISOString().slice(0, 10) %> -->
-                    <input type="date" name="birthday" value=""><br>
+                    <input type="text" name="fullname" value="" placeholder="<%= user.fullname %>"><br>
+
+                    <input type="text" name="phone" value="" placeholder="<%= user.phone %>"><br>
+
+                    <input type="text" name="address" value="" placeholder="<%= user.address %>"><br>
+
+                    <input type="date" name="birthday" value="" placeholder="<%= user.birthday%>"><br>
+
+
                     <button class="btn-save-edit-profile" type="submit">Save Changes</button>
                 </form>
             </div>
