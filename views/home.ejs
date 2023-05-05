@@ -46,6 +46,41 @@
                         </button>
                     </a>
                 </li>
+                <li>
+                    <% getLabels.forEach((label)=> { %>
+                    <div class="email-zoom-out">
+                      <a href="#" class="email-content">
+                        <span>
+                          <%= label.nameLabel %>
+                        </span>
+                        <button class="more-btn" onclick="toggleOptions(this)">
+                          <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                        <div class="more-options">
+                          <button class="edit-btn">Edit</button>
+                          <button class="delete-btn">Delete</button>
+                        </div>
+                      </a>
+                    </div>
+                    <% }); %>
+                  </li>
+                  <script>
+                    function toggleOptions(button) {
+                      const options = button.parentNode.querySelector(".more-options");
+                      options.classList.toggle("show");
+                    }
+                  </script>
+                  
+                  <style>
+                    .more-options {
+                      display: none;
+                    }
+                    .more-options.show {
+                      display: block;
+                    }
+                  </style>
+                  
+
             </ul>
         </div>
 
@@ -62,12 +97,12 @@
 
             <form action="/search" method="POST">
                 <div class="search-wrapper">
-                  <span class="fa fa-search"></span>
-                  <input type="search" placeholder="Search here" name="keyword" id="search-input">
+                    <span class="fa fa-search"></span>
+                    <input type="search" placeholder="Search here" name="keyword" id="search-input">
                 </div>
                 <button type="submit">Search</button>
-              </form>
-              
+            </form>
+
 
             <button class="user-wrapper" id="user-wrapper">
                 <img src="/images/meiko.png" alt="">
@@ -151,23 +186,26 @@
         </div>
     </form>
 
-    <div class="container-label-box overlay label-active">
-        <div class="new-label-box">
-
-            <div class="div-title">
-                <span class="title-label-box">New label</span>
-                <button type="" class="btn-close-label-box"><i class="fa fa-times"></i></button>
-            </div>
-            <div class="content-label">
-                <span>Please enter a new label name:</span>
-            </div>
-            <input type="text" name="label" value="">
-            <div class="container-btn">
-                <button class="btn-cancel-label"><span>Cancel</span></button>
-                <button class="btn-create-label"><span>Create</span></button>
+    <form action="/labels" method="post">
+        <div class="container-label-box overlay label-active">
+            <div class="new-label-box">
+                <div class="div-title">
+                    <span class="title-label-box">New label</span>
+                    <button type="" class="btn-close-label-box"><i class="fa fa-times"></i></button>
+                </div>
+                <div class="content-label">
+                    <span>Please enter a new label name:</span>
+                </div>
+                <input type="text" name="name" id="label-input">
+                <div class="container-btn">
+                    <button class="btn-cancel-label"><span>Cancel</span></button>
+                    <button class="btn-create-label" id="create-label-btn"><span>Create</span></button>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
+
+
 </body>
 <script type="text/javascript" src="/javascripts/main.js"></script>
 
