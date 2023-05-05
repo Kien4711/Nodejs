@@ -61,7 +61,7 @@
                 <li>
                     <% getLabels.forEach((label)=> { %>
                     <div class="email-zoom-out">
-                      <a href="#" class="email-content">
+                      <a href="/label/<%=label.nameLabel%>" >
                         <span>
                           <%= label.nameLabel %>
                         </span>
@@ -149,9 +149,10 @@
             <div class="email-zoom-out">
                 <input type="checkbox" name="selected-email" id="checkbox-Selected-Email">
                 <span><button type="button" class="fa fa-star-o btnDetailMail-star"></button></span>
-                <a href="#" class="email-content">
+                <a href="email/<%=email._id%>">
+
                     <span>
-                        <%= email.from %>
+                        <%= email.to %>
                     </span>
                     <span class="email-sub-content">
                         <%= email.text %>
@@ -162,8 +163,6 @@
                 </a>
             </div>
             <% }); %>
-
-
                 </div>
     </main>
     <div class="user-menu display-menu-user">
@@ -221,6 +220,18 @@
 
 </body>
 <script type="text/javascript" src="/javascripts/main.js"></script>
+
+<script>
+    const emailContentElements = document.querySelectorAll('.email-content');
+  
+    emailContentElements.forEach((element) => {
+      element.addEventListener('click', (event) => {
+        event.preventDefault();
+        const emailId = element.getAttribute('data-email-id');
+        window.location.href = `/email/${emailId}`;
+      });
+    });
+  </script>
 
 
 </html>

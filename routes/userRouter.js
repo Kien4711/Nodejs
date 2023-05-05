@@ -88,9 +88,15 @@ router.get("/", function (req, res) {
 
 ////////////////////login//////////////////////////////////////////////////////
 router.get("/login", loginValidator, function (req, res) {
+  if (!req.session.isLoggedIn) {
+    res.redirect('login')
+  }
+
   const error = req.flash("error") || "";
 
-  res.render("login", { error });
+  if (req.session.u)
+
+    res.render("login", { error });
 });
 
 router.post("/login", loginValidator, async (req, res) => {
@@ -139,7 +145,6 @@ router.post("/login", loginValidator, async (req, res) => {
     });
 
     const getLabels = await getAllLabel(req)
-    console.log('test' + getLabels)
     req.flash("emailsToUser", emailsToUser);
     res.render("home", { emailsToUser, getLabels });
   } catch (err) {
@@ -473,6 +478,22 @@ router.post("/edit-profile", (req, res) => {
   );
 });
 
+router.get('/email/:id', async (req, res) => {
+
+  if (req.session.isLoggedIn) {
+    const emailID = req.params.id;
+    const email = await Email.findById(emailID); {
+    }
+
+    res.render('detailMail', { email });
+  }
+  else {
+    res.redirect("/login");
+  }
+
+});
+
+
 // Render the edit profile page
 router.get("/edit-profile", (req, res) => {
   // Get the current user from the session
@@ -485,8 +506,8 @@ router.get("/edit-profile", (req, res) => {
 /////////////////////// Label
 router.post("/labels", async (req, res) => {
   const { name } = req.body;
-  if (req.session.isLoggedIn ) {
-    if(name == '') {
+  if (req.session.isLoggedIn) {
+    if (name == '') {
       return res.redirect("home");
     }
     else {
@@ -498,20 +519,30 @@ router.post("/labels", async (req, res) => {
       const emailsToUser = await Email.find({
         to: { $in: [req.session.user.email] },
       });
-  
+
       req.flash("emailsToUser", emailsToUser);
-  
+
       const getLabels = await getAllLabel(req)
       req.flash("emailsToUser", emailsToUser);
       res.redirect("home");
     }
-    
   }
   else {
     res.redirect("/login");
-
   }
-
 });
+router.get("/label/:name", async (req, res) => {
 
-module.exports = router;
+  if (req.session.isLoggedIn) {
+    const name = req.params.name;
+    console.log()
+    const emailByLabel =  await Email.find({ to: "example@example.com", labels: "label1" })
+    console.log('test '+label)
+  }
+  else {
+    res.redirect("/login");
+  }
+})
+
+module.exports = router;  
+//test branch
