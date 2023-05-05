@@ -1,267 +1,64 @@
-const express = require('express')
-require('dotenv').config()
-const router = express.Router()
-var bodyParser = require('body-parser');
-let async = require('async');
-const fs = require('fs');
-const bcrypt = require('bcrypt')
-const saltRounds = 10;
-const moment = require('moment')
-
-//validator form
-const {check, validationResult} = require('express-validator')
-const registerValidator = require('../routes/validators/registerValidator')
-const loginValidator = require('../routes/validators/loginValidator')
-
-
-// var cookieParser = require('cookie-parser')
-// const multiparty = require('multiparty');
-router.use(bodyParser.urlencoded({ extended:false }))
-router.use(bodyParser.json())
-
-//db Model
-const User = require('../models/userModel')
-const Email = require('../models/mailModel')
-
-const mongoose = require("mongoose");
-db = require("../libs/db")
-const urlencodedParser = bodyParser.urlencoded({ extended: false })
-
-
-//session
-const session = require('express-session')
-
-router.use(session({
-    secret: 'buitrungkien',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 10 * 60 * 1000 } // Thời gian sống của cookie là 10 phút
-}))
-
-//function send OTP
-const accountSid = process.env.twilio_ACCOUNT_SID
-const authToken = process.env.twilio_AUTH_TOKEN
-const twilioNumber = process.env.twilio_Phone
-const client = require('twilio')(accountSid, authToken);
-
-async function sendOTP(phoneNumber, otp) {
-  try {
-    const message = await client.messages.create({
-      body: `Your OTP is ${otp}`,
-      from: twilioNumber,
-      to: phoneNumber
-    });
-    console.log(message.sid);
-    return message.sid;
-  } catch (error) {
-    console.error(error);
-    throw new Error('Failed to send OTP via SMS');
-  }
-}
-//resful API
-router.get('/', function(req, res) {
-    res.render('login')
-})
-// router.post('/', function(req, res) {
-//     res.render('home')
-// })
-
-////////////////////login//////////////////////////////////////////////////////
-router.get('/login',loginValidator, function(req, res) {
-    res.render('login')
-})
-
-router.post('/login', loginValidator, async (req, res) => {
-    const result = validationResult(req);
-  
-    if (!result.isEmpty()) {
-      return res.status(422).json({ code: 4, message: result });
-    }
-  
-    try {
-      // If validation passed
-      if (req.body.email == "admin@gmail.com" && req.body.password == "123456") {
-        req.session.admin = true
-        return res.redirect('/admin')
-      }
-  
-      const user = await User.findOne({ email: req.body.email });
-      if (!user) {
-        return res.status(401).json({ code: 1, message: 'No user found with this email' });
-      }
-  
-      const match = await bcrypt.compare(req.body.password, user.password);
-      if (!match) {
-        return res.status(401).json({ code: 2, message: 'Incorrect password' });
-      }
-  
-      // Login successful
-      req.session.user = user;
-      res.redirect('home');
-    //   return res.status(200).json({ code: 0, message: 'Login successful' });
-    } catch (err) {
-      return res.status(500).json({ code: 3, message: 'Internal server error' });
-    }
-  });
-
-///////////////////register/////////////////////////////////////////////////////////////
-
-router.get('/register',registerValidator,(req, res) => {
-
-    res.render('register')
+router.get('/register', registerValidator, (req, res) => {
+  const error = req.flash('error') || ''
+  res.render('register', { error })
 })
 
 
 router.post('/register', registerValidator, async (req, res) => {
-    const result = validationResult(req);
+  const result = validationResult(req);
 
-    if (!result.isEmpty()) {
-        return res.status(400).json({ errors: result.errors });
+  if (!result.isEmpty()) {
+
+    const mappedResult = result.mapped()
+
+    let message;
+    for (fields in mappedResult) {
+      message = mappedResult[fields].msg
+      console.log(message)
+      break;
     }
 
-    const { username, email, phone, password, address, fullname, birthday } = req.body;
+    req.flash('error', message)
 
-    try {
-        const user = await User.findOne({ email: email });
-        if (user) {
-            return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
-        }
+    return res.redirect('/register');
+  }
 
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+  const { username, email, phone, password, address, fullname, birthday } = req.body;
 
-        const newUser = new User({
-            email: email,
-            phone: phone,
-            username: username,
-            fullname: fullname,
-            address: address,
-            birthday: birthday,
-            password: hashedPassword
-        });
+  try {
+    const user = await User.findOne({ email: email });
+    if (user) {
+      req.flash('error', 'User already exists')
 
-        await newUser.save();
-        return res.redirect('/login');
-    } catch (err) {
-        console.error(err);
-        return res.status(500).send('Server error');
+      return res.redirect('/register');
+
     }
-});
-// router.post('/register', registerValidator, async (req, res) => {
-//     try {
-//         const result = validationResult(req);
 
-//         if (!result.isEmpty()) {
-//             return res.status(400).json({ errors: result.errors });
-//         }
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    let userId = generateUserId()
+    const newUser = new User({
+      userId: userId,
+      email: email,
+      phone: phone,
+      username: username,
+      fullname: fullname,
+      address: address,
+      birthday: birthday,
+      password: hashedPassword
+    });
 
-//         const { username, email, phone, password, address, fullname, birthday } = req.body;
-
-//         const user = await User.findOne({ email: email });
-//         if (user) {
-//             return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
-//         }
-
-//         const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-//         // Generate random OTP
-//         const otp = Math.floor(100000 + Math.random() * 900000);
-
-//         // Encrypt OTP before sending
-//         const encryptedOtp = await bcrypt.hash(otp.toString(), saltRounds);
-
-//         // Send OTP via SMS
-//             const smsResult = await sendOTP(phone, otp);
-
-//             if (smsResult.success) {
-//             // Save user to database with encrypted password and OTP
-//             const newUser = new User({
-//                 email: email,
-//                 phone: phone,
-//                 username: username,
-//                 fullname: fullname,
-//                 address: address,
-//                 birthday: birthday,
-//                 password: hashedPassword,
-//                 otp: encryptedOtp
-//             });
-
-//             await newUser.save();
-//             return res.redirect('/register/verify-otp');
-//             } else {
-//             return res.status(500).json({ errors: [{ msg: 'Failed to send OTP' }] });
-//             }
-
-//     } catch (err) {
-//         console.error(err);
-//         return res.status(500).send('Server error');
-//     }
-// })
-
-////////////////verify-otp//////////////////////////////////////////////////////////////////////////////////////////
-
-// router.get('/register/verify-otp', (req, res, next)=>{
-//     res.render('OTP')
-// })
-
-// router.post('/register/verify-otp', async (req, res) => {
-//     try {
-//       const { otp, password } = req.body;
-  
-//       const user = await User.findOne({ otp: otp });
-//       if (!user) {
-//         return res.status(400).json({ errors: [{ msg: 'Invalid OTP' }] });
-//       }
-  
-//       // Verify OTP
-//       const isMatch = await bcrypt.compare(otp.toString(), user.otp);
-//       if (!isMatch) {
-//         return res.status(400).json({ errors: [{ msg: 'Invalid OTP' }] });
-//       }
-  
-//       // Encrypt password before saving to database
-//       const hashedPassword = await bcrypt.hash(password, saltRounds);
-  
-//       // Save user to database with encrypted password and verified OTP
-//       user.otp = null;
-//       user.password = hashedPassword;
-//       await user.save();
-  
-//       return res.redirect('/login');
-  
-//     } catch (err) {
-//       console.error(err);
-//       return res.status(500).send('Server error');
-//     }
-//   })
-
-/////////////////////////////////////////////////////////////////////
-router.get('/home', (req, res) => {
-    res.render('home')
+    await newUser.save();
+    return res.redirect('/login');
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('Server error');
+  }
+})
+////////////////////otp///////////////////////
+router.get('/register/verify-otp', (req, res) => {
+  res.render('OTP')
 })
 
-router.post('/home', (req, res) => {
-    res.render('home')
+router.post('/register/verify-otp', (req, res) => {
+  res.render('OTP')
 })
-
-////////////////////////////Sent//////////////////////////////////////////
-router.get('/home/sent', (req, res) => {
-
-    res.render('home')
-})
-router.post('/home/sent', (req, res) => {
-    
-    res.render('home')
-})
-
-////////////////////////////Draft//////////////////////////////////////////
-router.get('/home/draft', (req, res) => {
-
-    res.render('home')
-})
-router.post('/home/draft', (req, res) => {
-
-    res.render('home')
-})
-
-
-module.exports = router

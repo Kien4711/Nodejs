@@ -7,6 +7,7 @@
     const labelBox = document.querySelector('.container-label-box')
     const btnCloseLabelBox = document.querySelector('.btn-close-label-box')
     const btnCancelLabelBox = document.querySelector('.btn-cancel-label')
+    const linkToProfile = document.getElementById("profile-link")
 
     btnWriteMail.addEventListener('click', () => {
         mailBox.classList.remove("display-mail-box");
@@ -45,3 +46,8 @@
         const formData = new FormData();
         formData.append('file', file);
     })
+    // Lắng nghe sự kiện click vào link Profile
+    linkToProfile.addEventListener("click", function(event) {
+        event.preventDefault(); // Ngăn chặn chuyển hướng đến trang khác khi click vào link
+        window.location.href = "/profile"; // Chuyển hướng đến trang profile của người dùng đang đăng nhập
+    });

@@ -49,12 +49,23 @@ const authToken = process.env.twilio_AUTH_TOKEN
 const twilioNumber = process.env.twilio_Phone
 const client = require('twilio')(accountSid, authToken);
 
+function formatPhoneNumber(phoneNumber) {
+    const regex = /^0(\d{9})$/; // match 10 digits after '0'
+    const match = phoneNumber.match(regex);
+  
+    if (match) {
+      return `+84${match[1]}`; // add country code and remove leading '0'
+    }
+  
+    throw new Error('Invalid phone number');
+  }
+  
 async function sendOTP(phoneNumber, otp) {
   try {
     const message = await client.messages.create({
       body: `Your OTP is ${otp}`,
       from: twilioNumber,
-      to: phoneNumber
+      to: formatPhoneNumber(phoneNumber)
     });
     console.log(message.sid);
     return message.sid;
@@ -89,54 +100,35 @@ router.post('/login', loginValidator, async (req, res) => {
   const result = validationResult(req);
 
   if (!result.isEmpty()) {
-
-    const mappedResult = result.mapped()
-
-    let message;
-    for (fields in mappedResult) {
-      message = mappedResult[fields].msg
-      console.log(message)
-      break;
-    }
-
-    req.flash('error', message)
-
+    const message = Object.values(result.mapped())[0].msg;
+    req.flash('error', message);
     return res.redirect('/login');
   }
 
   try {
-    // If validation passed
-    if (req.body.email == "admin@gmail.com" && req.body.password == "123456") {
-      req.session.admin = true;
-      return res.redirect('/admin');
-    }
-
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      req.flash('error', 'No user found with this email')
+      req.flash('error', 'No user found with this email');
       return res.redirect('/login');
     }
 
     const match = await bcrypt.compare(req.body.password, user.password);
     if (!match) {
-      req.flash('error', 'Incorrect password')
+      req.flash('error', 'Incorrect password');
       return res.redirect('/login');
-
     }
 
-    // Login successful
     req.session.user = user;
     req.session.isLoggedIn = true;
 
     const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } });
-    console.log(emailsToUser);
-    console.log('test' + emailsToUser)
-    req.flash('emailsToUser',emailsToUser)
+    req.flash('emailsToUser', emailsToUser);
     res.render('home', { emailsToUser });
   } catch (err) {
     return res.status(500).json({ code: 3, message: 'Internal server error' });
   }
 });
+
 
 ///////////////////register/////////////////////////////////////////////////////////////
 
@@ -204,47 +196,51 @@ router.get('/register/verify-otp', (req, res) => {
 router.post('/register/verify-otp', (req, res) => {
   res.render('OTP')
 })
+
+
 //////////////////////////////////////////////////////
 router.get('/change-password', (req, res) => {
-  res.render('change-password', { errors: null });
+  res.render('change-password', { error: null });
 });
-
-// Route to handle change password request
+//////////////////chang password//////////////
 router.post('/change-password', async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
+  const userId = req.session.userId;
 
-  // Validate inputs
-  const errors = [];
+  try {
+    // Find the user
+    const user = await User.findOne(userId)
 
-  if (!oldPassword || !newPassword || !confirmPassword) {
-    errors.push({ msg: 'Please fill in all fields' });
+    // Check if the old password is correct
+    const isMatch = await bcrypt.compare(oldPassword, user.password)
+    if (!isMatch) {
+      throw new Error('Current password is incorrect' + user.email)
+    }
+
+    // Validate the new password
+    if (newPassword !== confirmPassword) {
+      throw new Error('Confirm password do not match')
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+    // Update the user's password in the database
+    await User.findByIdAndUpdate(userId, { password: hashedPassword })
+
+    // Delete the session and redirect to login page
+    req.session.destroy(err => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Server error')
+      } else {
+        res.redirect('/login');
+      }
+    });
+  } catch (error) {
+    res.render('change-password', { error: error });
   }
-
-  if (newPassword !== confirmPassword) {
-    errors.push({ msg: 'New password and confirm password do not match' });
-  }
-
-  // Check if old password is correct
-  const user = await User.findById(req.user.id);
-  const isMatch = await bcrypt.compare(oldPassword, user.password);
-
-  if (!isMatch) {
-    errors.push({ msg: 'Old password is incorrect' });
-  }
-
-  // If there are errors, render the form with errors
-  if (errors.length > 0) {
-    return res.render('change-password', { errors });
-  }
-
-  // Encrypt new password and save to database
-  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-  user.password = hashedPassword;
-  await user.save();
-
-  req.flash('success_msg', 'Password changed successfully');
-  res.redirect('/home');
-});
+})
 
 
 /////////////////////////////////////////////////////////////////////
@@ -257,9 +253,6 @@ router.get('/home', async(req, res) => {
     res.redirect('/login');
   }
 })
-
-
-
 
 router.post('/home', async(req, res) => {
   if (req.session.isLoggedIn) {
@@ -314,18 +307,24 @@ router.post('/home/draft', (req, res) => {
   res.render('home')
 })
 ////////////profile/////////////////////
-router.get('/profile/:id', async (req, res) => {
+router.get('/profile', async (req, res) => {
   try {
-    const user = await User.findOne({ userId: req.params.id });
-    if (!user) {
-      return res.status(404).json({ msg: 'User not found' });
+    // Check if user is logged in
+    if (!req.session.user) {
+      return res.redirect('/login')
     }
-    res.render('profile', { user });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
+
+    // Find the user
+    const user = await User.findOne(req.session.user)
+    console.log(user)
+    // Render the profile view and pass in the user object
+    res.render('profile', { user: user })
+  } catch (error) {
+    console.error(error)
+    res.status(500).send('Server error')
   }
-});
+})
+
 
 
 // Thiết lập storage cho Multer
@@ -342,8 +341,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 // Route để render form upload avatar
-router.get('/profile/:id/update-avatar', async (req, res) => {
-  const user = await User.findById(req.params.id);
+router.get('/profile/update-avatar', async (req, res) => {
+  const user = await User.findById(req.session.id);
   res.render('update-avatar', { user: user });
 });
 
@@ -375,47 +374,14 @@ router.post('/search', async (req, res) => {
 
 // Route để xử lý request upload avatar
 router.post('/update-avatar', upload.single('avatar'), async (req, res) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.userId);
   user.avatar = '/uploads/' + req.file.filename; // Lưu đường dẫn của file ảnh vào trường 'avatar'
   await user.save();
-  res.redirect('/profile/' + req.user.id); // Chuyển hướng người dùng về trang profile của họ
+  res.redirect('/profile/' + req.user.userId); // Chuyển hướng người dùng về trang profile của họ
 });
 
-//////////////////chang password//////////////
-router.post('/change-password', (req, res) => {
-  const { currentPassword, newPassword, confirmPassword } = req.body;
-  const userId = req.session.userId;
 
-  // TODO: validate input
-
-  // check if current password is correct
-  User.findById(userId)
-    .then(user => {
-      return bcrypt.compare(currentPassword, user.password);
-    })
-    .then(isMatch => {
-      if (!isMatch) {
-        throw new Error('Current password is incorrect');
-      }
-
-      // hash new password
-      return bcrypt.hash(newPassword, 10);
-    })
-    .then(hashedPassword => {
-      // update user password in db
-      return User.findByIdAndUpdate(userId, { password: hashedPassword });
-    })
-    .then(() => {
-      // redirect to profile page
-      res.redirect('/profile');
-    })
-    .catch(error => {
-      res.render('change-password', { error });
-    });
-});
-///////////////////edit-profile////////
-
-
+//////////////////////sent mail///////////////
 
 router.get("/get-send-email", async (req, res) => {
   if (req.session.isLoggedIn) {
@@ -441,7 +407,7 @@ router.get("/get-email", async (req, res) => {
   }
 })
 
-
+///////////////////edit-profile////////
 // Handle POST request to /edit-profile
 router.post("/edit-profile", (req, res) => {
   // Get the current user from the session
