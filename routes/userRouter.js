@@ -72,11 +72,11 @@ function generateUserId() {
 }
 //resful API
 router.get('/', function (req, res) {
-  res.render('login')
+  const error = req.flash('error') || ''
+
+  res.render('login', { error })
 })
-// router.post('/', function(req, res) {
-//     res.render('home')
-// })
+
 
 ////////////////////login//////////////////////////////////////////////////////
 router.get('/login', loginValidator, function (req, res) {
@@ -127,8 +127,12 @@ router.post('/login', loginValidator, async (req, res) => {
     // Login successful
     req.session.user = user;
     req.session.isLoggedIn = true;
-    console.log('test ' + req.session.user.email);
-    res.redirect('home');
+
+    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } });
+    console.log(emailsToUser);
+    console.log('test' + emailsToUser)
+    req.flash('emailsToUser',emailsToUser)
+    res.render('home', { emailsToUser });
   } catch (err) {
     return res.status(500).json({ code: 3, message: 'Internal server error' });
   }
@@ -244,29 +248,62 @@ router.post('/change-password', async (req, res) => {
 
 
 /////////////////////////////////////////////////////////////////////
-router.get('/home', (req, res) => {
+router.get('/home', async(req, res) => {
   if (req.session.isLoggedIn) {
-    res.render('home')
+    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } });
+    res.render('home', { emailsToUser })
   }
   else {
     res.redirect('/login');
   }
 })
 
-router.post('/home', (req, res) => {
-  res.render('home')
+
+
+
+router.post('/home', async(req, res) => {
+  if (req.session.isLoggedIn) {
+    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } });
+    res.render('home', { emailsToUser })
+  }
+  else {
+    res.redirect('/login');
+  }
+
 })
 
 ////////////////////////////Sent//////////////////////////////////////////
-router.get('/home/sent', (req, res) => {
 
-  res.render('home')
+router.post("/send-email", async (req, res) => {
+  if (req.session.isLoggedIn) {
+
+    const { email, subject, message } = req.body;
+    const newEmail = new Email({
+      from: req.session.user.email,
+      to: email,
+      subject: subject,
+      text: message,
+    });
+
+    await newEmail.save();
+    res.redirect('home',);
+
+  } else {
+    console.log('correct')
+    res.redirect('/login');
+  }
+});
+
+router.get('/sended',async (req, res) => {
+  if (req.session.isLoggedIn) {
+    const emailsToUser = await Email.find({ from: req.session.user.email });
+
+    res.render('sended', { emailsToUser })
+  }
+  else {
+    res.redirect('/login');
+  }
 })
-router.post('/home/sent', (req, res) => {
-
-  res.render('home')
-})
-
 ////////////////////////////Draft//////////////////////////////////////////
 router.get('/home/draft', (req, res) => {
 
@@ -312,9 +349,10 @@ router.get('/profile/:id/update-avatar', async (req, res) => {
 
 router.post('/search', async (req, res) => {
   if (req.session.isLoggedIn) {
+    console.log('demo');
     const { keyword } = req.body;
-    
-    const emails = await Email.find({
+
+    const emailsToUser = await Email.find({
       $and: [
         { from: req.session.user.email },
         {
@@ -326,9 +364,9 @@ router.post('/search', async (req, res) => {
         }
       ]
     });
-    
-    console.log(emails);
-    res.redirect('/home');
+
+    console.log(emailsToUser);
+    res.render('home', { emailsToUser });
   } else {
     res.redirect('/login');
   }
@@ -376,23 +414,7 @@ router.post('/change-password', (req, res) => {
     });
 });
 ///////////////////edit-profile////////
-router.post("/send-email", async (req, res) => {
-  if (req.session.isLoggedIn) {
-    const { to, subject, text } = req.body;
-    const newEmail = new Email({
-      from: req.session.user.email,
-      to: to,
-      subject: subject,
-      text: text,
-    });
 
-    await newEmail.save();
-
-    res.redirect('/home');
-  } else {
-    res.redirect('/login');
-  }
-});
 
 
 router.get("/get-send-email", async (req, res) => {
@@ -416,7 +438,6 @@ router.get("/get-email", async (req, res) => {
   else {
     res.redirect('/login');
     console.log('error');
-
   }
 })
 

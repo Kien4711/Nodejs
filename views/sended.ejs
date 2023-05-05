@@ -22,13 +22,13 @@
         <div class="sidebar-menu">
             <ul>
                 <li>
-                    <a href="home" class="active">
+                    <a href="home" >
                         <span class="fa fa-inbox"></span>
                         <span>Inbox</span>
                     </a>
                 </li>
                 <li>
-                    <a href="sended">
+                    <a href="sended" class="active">
                         <span class="fa fa-paper-plane"></span>
                         <span>Sent</span>
                     </a>
@@ -48,7 +48,6 @@
                 </li>
             </ul>
         </div>
-
     </div>
 
     <div class="main-content">
@@ -60,14 +59,17 @@
                 Compose
             </button>
 
-            <form action="/search" method="POST">
-                <div class="search-wrapper">
-                  <span class="fa fa-search"></span>
-                  <input type="search" placeholder="Search here" name="keyword" id="search-input">
-                </div>
-                <button type="submit">Search</button>
-              </form>
-              
+            <div class="search-wrapper">
+                <span class="fa fa-search"></span>
+                <input type="search" placeholder="Search here" name="search" id="search-input">
+            </div>
+            
+            <div class="email-list">
+                <ul id="email-list-ul">
+                    <!-- email list items will be added here dynamically using JavaScript -->
+                </ul>
+            </div>
+            
 
             <button class="user-wrapper" id="user-wrapper">
                 <img src="/images/meiko.png" alt="">
@@ -98,25 +100,19 @@
             </span>
         </div>
 
-        <% emailsToUser.forEach((email)=> { %>
+        <% emailsToUser.forEach((email) => { %>
             <div class="email-zoom-out">
                 <input type="checkbox" name="selected-email" id="checkbox-Selected-Email">
                 <a href="#" class="email-content">
-                    <span>
-                        <%= email.from %>
-                    </span>
-                    <span class="email-sub-content">
-                        <%= email.text %>
-                    </span>
-                    <span class="date-email">
-                        <%= email.sentAt %>
-                    </span>
+                    <span>To <%= email.to %></span>
+                    <span class="email-sub-content"><%= email.text %></span>
+                    <span class="date-email"><%= email.sentAt %></span>
                 </a>
             </div>
-            <% }); %>
+          <% }); %>
+        
 
-
-                </div>
+        </div>
     </main>
     <div class="user-menu display-menu-user">
         <table>
@@ -170,6 +166,5 @@
     </div>
 </body>
 <script type="text/javascript" src="/javascripts/main.js"></script>
-
 
 </html>
