@@ -168,8 +168,8 @@ router.post('/register', registerValidator, async (req, res) => {
     if (user) {
       req.flash('error', 'User already exists')
 
-    return res.redirect('/register');
-      
+      return res.redirect('/register');
+
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
