@@ -88,9 +88,6 @@ router.get("/", function (req, res) {
 
 ////////////////////login//////////////////////////////////////////////////////
 router.get("/login", loginValidator, function (req, res) {
-  if (!req.session.isLoggedIn) {
-    res.redirect('login')
-  }
 
   const error = req.flash("error") || "";
 
@@ -114,7 +111,7 @@ router.post("/login", loginValidator, async (req, res) => {
 
     req.flash("error", message);
 
-    return res.redirect("/login");
+    return res.render("/login");
   }
 
   try {
@@ -374,11 +371,12 @@ router.post("/search", async (req, res) => {
     });
 
     console.log(emailsToUser);
-    res.render("home", { emailsToUser });
+    const getLabels = await getAllLabel(req)
+    res.render("home", { emailsToUser,getLabels });
 
 
   } else {
-    res.redirect("/login");
+    res.redirect("");
   }
 });
 
@@ -536,13 +534,30 @@ router.get("/label/:name", async (req, res) => {
   if (req.session.isLoggedIn) {
     const name = req.params.name;
     console.log()
-    const emailByLabel =  await Email.find({ to: "example@example.com", labels: "label1" })
-    console.log('test '+label)
+    const emailsToUser = await Email.find({
+      labels: { $in: [name] },
+      $or: [
+        { from: req.session.user.email },
+        { to: { $in: [req.session.user.email] } }
+      ]
+    });
+    const getLabels = await getAllLabel(req)
+    res.render("home", { emailsToUser, getLabels});
   }
   else {
-    res.redirect("/login");
+    res.redirect("login");
   }
 })
 
-module.exports = router;  
+router.delete('/labels/:name', async (req, res) => {
+  try {
+    const label = req.params.name;
+    const deletedLabel = await Label.deleteOne({ user: req.session.user.email, nameLabel: label });
+    res.status(200).json(deletedLabel);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+module.exports = router;
 //test branch
