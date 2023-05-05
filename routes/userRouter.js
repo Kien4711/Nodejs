@@ -310,6 +310,31 @@ router.get('/profile/:id/update-avatar', async (req, res) => {
   res.render('update-avatar', { user: user });
 });
 
+router.post('/search', async (req, res) => {
+  if (req.session.isLoggedIn) {
+    const { keyword } = req.body;
+    
+    const emails = await Email.find({
+      $and: [
+        { from: req.session.user.email },
+        {
+          $or: [
+            { subject: { $regex: keyword, $options: "i" } },
+            { text: { $regex: keyword, $options: "i" } },
+            { to: { $elemMatch: { $regex: keyword, $options: "i" } } }
+          ]
+        }
+      ]
+    });
+    
+    console.log(emails);
+    res.redirect('/home');
+  } else {
+    res.redirect('/login');
+  }
+});
+
+
 // Route để xử lý request upload avatar
 router.post('/update-avatar', upload.single('avatar'), async (req, res) => {
   const user = await User.findById(req.user.id);
