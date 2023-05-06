@@ -71,7 +71,7 @@ async function getAllLabel(req) {
   const allLabels = await Label.find({
     user: { $in: req.session.user.email }
   });
-  console.log('test ' + allLabels);
+  
   return allLabels;
 }
 
@@ -567,10 +567,10 @@ router.post('/labels/update/:name/:newLabel', async (req, res) => {
     const newLabel = req.params.newLabel;
 
     const updatedLabel = await Label.updateOne(
-      { user: req.session.user.email, nameLabel: oldLabel }, 
-      { $set: { nameLabel: newLabel } }
+      { user: req.session.user.email, nameLabel: oldLabel },
+      { $set: { nameLabel: newLabel }}
     );
-    
+
     res.status(200).json(updatedLabel);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -590,7 +590,7 @@ router.get('/email/:id', async (req, res) => {
     const emails = [emailOriginal].concat(listEmailReply);
     const getLabels = await getAllLabel(req)
 
-    res.render('detailMail', { emails, userName ,getLabels});
+    res.render('detailMail', { emails, userName, getLabels });
   }
   else {
     res.redirect("/login");
@@ -631,19 +631,72 @@ router.post('/emails/:id/delete-label/:label', async (req, res) => {
 
     await email.save();
 
-    return res.status(200).json({ message: 'Label deleted from email' });
+    return res.status(200).json({ message: 'Label deleted from em ail' });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 });
 
+// async function forwardEmail(emailId, forwardTo, forwardBody) {
+//   console.log(test)
+//     console.log(req.session.user.email)
+//     console.log(forwardTo)
+//     console.log(forwardBody)
+//     console.log(email._id)
+//   try {
+
+//     // const email = await Email.findById(emailId);
+    
+//     newEmail = new Email({
+//       from: req.session.user.email,
+//       to: forwardTo,
+//       subject: email.subject,
+//       text: forwardBody,
+//       parentID: emailId
+//     });
+
+//     // await newEmail.save();
+//     return newEmail;
+//   } catch (error) {
+//     console.error(error);
+//     throw new Error("Failed to forward email");
+//   }
+// }
+
+router.post('/emails/:id/forward', async (req, res) => {
+  try {
+    const emailId = req.params.id;
+    const forwardTo = req.body.forwardTo;
+    const forwardBody = req.body.forwardBody;
+    console.log('demo1')
+    console.log(emailId)
+    console.log(forwardTo)
+    console.log(forwardBody)
+    console.log(req.session.user.email)
 
 
+    // const newEmail = await forwardEmail(emailId, forwardTo, forwardBody);
+    const email = await Email.findById(emailId);
+    console.log('demo2 '+email)
+    
+
+    const newEmail = new Email({
+      from: req.session.user.email,
+      to: forwardTo,
+      subject: email.subject,
+      text: forwardBody,
+      parentID: emailId
+    });
+    await newEmail.save();
+    return res.redirect('register')
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 router.post('/email/reply/:id/:newText', async (req, res) => {
   const emailID = req.params.id;
   const emailOld = await Email.findById(emailID);
-
   const userName = await User.findOne({ email: req.session.user.email });
 
   if (req.session.user.email == emailOld.from) {
@@ -676,10 +729,8 @@ router.post('/email/reply/:id/:newText', async (req, res) => {
 
   const getLabels = await getAllLabel(req)
 
-  res.render('detailMail', { emails, userName ,getLabels});
+  res.render('detailMail', { emails, userName, getLabels });
 });
-
-
 
 module.exports = router;
 //test branch
