@@ -13,6 +13,7 @@ const emailSchema = new mongoose.Schema({
     contentType: { type: String},
     content: { type: Buffer,},
   }],
+  parentID:[{type: String}]
 });
 
 const Email = mongoose.model('Email', emailSchema);
