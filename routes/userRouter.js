@@ -582,12 +582,27 @@ router.get('/email/:id', async (req, res) => {
     const emailID = req.params.id;
 
     const userName = await User.findOne({ email: req.session.user.email })
-    const emailOriginal = await Email.findById(emailID);
-    const listEmailReply = await Email.find({ parentID: emailID })
-    const emails = [emailOriginal].concat(listEmailReply);
-    const getLabels = await getAllLabel(req)
+  const emailOld = await Email.findById(emailID);
 
-    res.render('detailMail', { emails, userName, getLabels });
+    var replyUser = ''
+    if (req.session.user.email != emailOld.from) {
+      replyUser = emailOld.from
+  }
+
+  for (const recipient of emailOld.to) {
+    if (req.session.user.email != recipient) {
+      replyUser = recipient
+      await newEmail.save();
+    }
+  }
+
+  const emailOriginal = await Email.findById(emailID);
+  const listEmailReply = await Email.find({ parentID: emailID })
+  const emails = [emailOriginal].concat(listEmailReply);
+
+  const getLabels = await getAllLabel(req)
+
+    res.render('detailMail', { emails, userName, getLabels ,replyUser});
   }
   else {
     res.redirect("/login");
@@ -655,23 +670,30 @@ router.post('/emails/:id/forward', async (req, res) => {
       parentID: emailId
     });
     await newEmail.save();
-    return res.redirect('register')
+     const emailOriginal = await Email.findById(emailID);
+  const listEmailReply = await Email.find({ parentID: emailID })
+  const emails = [emailOriginal].concat(listEmailReply);
+
+  const getLabels = await getAllLabel(req)
+
+  res.render('detailMail', { emails, userName, getLabels });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-router.post('/email/reply/:id/:newText', async (req, res) => {
+router.post('/email/reply/:id', async (req, res) => {
   const emailID = req.params.id;
   const emailOld = await Email.findById(emailID);
-  const userName = await User.findOne({ email: req.session.user.email });
+  const userName = await User.findOne({ email:req.session.user.email});
+  const { email, message } = req.body;
 
   if (req.session.user.email == emailOld.from) {
     newEmail = new Email({
       from: req.session.user.email,
-      to: emailOld.to,
+      to: email,
       subject: emailOld.subject,
-      text: req.params.newText,
+      text: message,
       parentID: emailID
     });
     await newEmail.save();
@@ -681,9 +703,9 @@ router.post('/email/reply/:id/:newText', async (req, res) => {
     if (req.session.user.email == recipient) {
       newEmail = new Email({
         from: req.session.user.email,
-        to: emailOld.from,
+        to: email,
         subject: emailOld.subject,
-        text: req.params.newText,
+        text: message,
         parentID: emailID
       });
       await newEmail.save();

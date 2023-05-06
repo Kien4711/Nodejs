@@ -72,15 +72,12 @@
                 </label>
                 Compose
             </button>
-
             <form action="/search" method="POST">
                 <div class="search-wrapper">
                     <span><button type="submit" class="fa fa-search btn-search"></button></span>
                     <input type="search" placeholder="Search here" name="keyword" id="search-input">
                 </div>
             </form>
-
-
             <button class="user-wrapper" id="user-wrapper">
                 <img src="/images/meiko.png" alt="">
                 <div>
@@ -158,13 +155,13 @@
                             class="fa fa-share btnDetailMail-forward-main"><span>Forward</span></button></div>
                 </div>
                 <div>
-                    <form action="/send-email" method="post" id="reply-mail-box" class="display-mail-box">
+                    <form action="/email/reply/<%= emails[0]._id %>" method="post" id="reply-mail-box" class="display-mail-box">
                         <button type="" class="btn-close-reply-mail-box"><i class="fa fa-times"></i></button>
                         <div class="reply-mail-box-container">
                             <div class="reply-mail-box">
                                 <div class="r1">
                                     <button class="reply-or-forward-menu"><span class="fa fa-reply"></span><span class="fa fa-sort-desc"></span></button>
-                                    <span>To <input type="text" id="email" name="email" placeholder="" required></span>
+                                    <span>To <input value="<%=replyUser%>"  type="text" id="email" name="email" placeholder="" required></span>
                                 </div> 
                                 <textarea id="message" name="message" placeholder="Write something.." required></textarea>
                                 <div class="container-btn-reply-email">
