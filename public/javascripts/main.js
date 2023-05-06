@@ -38,11 +38,11 @@
     })
 
     btnForwardMail.addEventListener('click', () => {
-      replyMailBox.classList.remove("display-mail-box");
+      forwardMailBox.classList.remove("display-forward-box");
     })
 
     btnCloseForwardMailBox.addEventListener('click', () => {
-      replyMailBox.classList.add("display-mail-box");
+      forwardMailBox.classList.add("display-forward-box");
     })
 
     let isMenuOpen = false;

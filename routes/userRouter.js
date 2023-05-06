@@ -649,12 +649,11 @@ router.post('/emails/:id/delete-label/:label', async (req, res) => {
   }
 });
 
-router.post('/emails/:id/forward', async (req, res) => {
+router.post('/emails/forward/:id', async (req, res) => {
   try {
     const emailID = req.params.id;
-    const forwardTo = req.body.forwardTo;
-    const forwardBody = req.body.forwardBody;
-
+    const { forwardTo, forwardBody } = req.body;
+    
     const email = await Email.findById(emailID);
 
     const newEmail = new Email({
