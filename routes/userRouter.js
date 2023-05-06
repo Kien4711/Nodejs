@@ -637,32 +637,6 @@ router.post('/emails/:id/delete-label/:label', async (req, res) => {
   }
 });
 
-// async function forwardEmail(emailId, forwardTo, forwardBody) {
-//   console.log(test)
-//     console.log(req.session.user.email)
-//     console.log(forwardTo)
-//     console.log(forwardBody)
-//     console.log(email._id)
-//   try {
-
-//     // const email = await Email.findById(emailId);
-    
-//     newEmail = new Email({
-//       from: req.session.user.email,
-//       to: forwardTo,
-//       subject: email.subject,
-//       text: forwardBody,
-//       parentID: emailId
-//     });
-
-//     // await newEmail.save();
-//     return newEmail;
-//   } catch (error) {
-//     console.error(error);
-//     throw new Error("Failed to forward email");
-//   }
-// }
-
 router.post('/emails/:id/forward', async (req, res) => {
   try {
     const emailId = req.params.id;
@@ -677,9 +651,7 @@ router.post('/emails/:id/forward', async (req, res) => {
 
     // const newEmail = await forwardEmail(emailId, forwardTo, forwardBody);
     const email = await Email.findById(emailId);
-    console.log('demo2 '+email)
-    
-
+   
     const newEmail = new Email({
       from: req.session.user.email,
       to: forwardTo,
