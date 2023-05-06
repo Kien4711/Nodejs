@@ -15,6 +15,8 @@
     const btnDetailMail = document.querySelector('.btnDetailMail-star')
     const btnReplyMail = document.querySelector('.btnDetailMail-reply-main')
     const replyMailBox = document.getElementById('reply-mail-box')
+    const btnCloseReplyMailBox = document.querySelector('.btn-close-reply-mail-box')
+
     btnWriteMail.addEventListener('click', () => {
         mailBox.classList.remove("display-mail-box");
     })
@@ -27,7 +29,7 @@
       replyMailBox.classList.remove("display-mail-box");
     })
 
-    btnReplyMail.addEventListener('click', () => {
+    btnCloseReplyMailBox.addEventListener('click', () => {
       replyMailBox.classList.add("display-mail-box");
     })
 
