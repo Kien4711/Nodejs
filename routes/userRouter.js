@@ -6,11 +6,19 @@ let async = require("async");
 const fs = require("fs");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+<<<<<<< Updated upstream
 const moment = require("moment");
 const multer = require("multer");
 const path = require("path");
 const session = require("express-session");
 const flash = require("connect-flash");
+=======
+const moment = require('moment')
+
+const path = require('path')
+const session = require('express-session')
+const flash = require('connect-flash');
+>>>>>>> Stashed changes
 
 //validator form
 const { check, validationResult } = require("express-validator");
@@ -256,11 +264,24 @@ router.post("/change-password", async (req, res) => {
 });
 
 /////////////////////////////////////////////////////////////////////
+<<<<<<< Updated upstream
 router.get("/home", async (req, res) => {
   if (req.session.isLoggedIn) {
     const emailsToUser = await Email.find({
       to: { $in: [req.session.user.email] },
     });
+=======
+router.get('/home', async (req, res) => {
+  if (req.session.isLoggedIn) {
+    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } })
+
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+>>>>>>> Stashed changes
 
     const getLabels = await getAllLabel(req)
 
@@ -272,17 +293,41 @@ router.get("/home", async (req, res) => {
 
 router.post("/home", async (req, res) => {
   if (req.session.isLoggedIn) {
+<<<<<<< Updated upstream
     const emailsToUser = await Email.find({
       to: { $in: [req.session.user.email] },
     });
     const getLabels = await getAllLabel(req)
     res.render("home", { emailsToUser, getLabels });
+=======
+    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } })
+    res.render('home', { emailsToUser});
+
+  }
+  else {
+    res.redirect('/login');
+  }
+>>>>>>> Stashed changes
 
   } else {
     res.redirect("/login");
   }
 });
 
+/////////log out/////////////////////////////
+router.post('/logout', async (req, res) => {
+  try {
+    // Gửi thông báo cho người dùng (nếu có)
+
+    // Đăng xuất
+    req.session.destroy();
+
+    // Trả về trang đăng nhập
+    res.redirect('/login');
+  } catch (err) {
+    console.error(err);
+  }
+});
 ////////////////////////////Sent//////////////////////////////////////////
 
 router.post("/send-email", async (req, res) => {
@@ -311,6 +356,7 @@ router.get("/sended", async (req, res) => {
   } else {
     res.redirect("/login");
   }
+<<<<<<< Updated upstream
 });
 //////////////////////////////////////Star/////////////////////////////////
 
@@ -341,6 +387,25 @@ router.get("/draft", (req, res) => {
 });
 router.post("/home/draft", (req, res) => {
   res.render("home");
+=======
+  else {
+    res.redirect('/login');
+  }
+})
+//////////////////////stared///////////
+// Route xử lý yêu cầu POST để cập nhật trạng thái started của email
+router.post('/emails/:id/started', function(req, res) {
+  var emailId = req.params.id;
+  Email.findByIdAndUpdate(emailId, { stared: true }, function(error, email) {
+    if (error) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (!email) {
+      return res.status(404).json({ error: 'Email not found' });
+    }
+    return res.json({ message: 'Email started successfully' });
+  });
+>>>>>>> Stashed changes
 });
 ////////////profile/////////////////////
 router.get("/profile/:id", async (req, res) => {
@@ -354,11 +419,21 @@ router.get("/profile/:id", async (req, res) => {
     console.error(err);
     res.status(500).send("Server error");
   }
+<<<<<<< Updated upstream
 });
 
+=======
+})
+
+
+/////////////////////////////change-avatar//////////////////
+>>>>>>> Stashed changes
 // Thiết lập storage cho Multer
+const multer = require("multer")
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+<<<<<<< Updated upstream
     cb(null, "public/uploads/");
   },
   filename: function (req, file, cb) {
@@ -374,6 +449,50 @@ router.get("/profile/:id/update-avatar", async (req, res) => {
   const user = await User.findById(req.params.id);
   res.render("update-avatar", { user: user });
 });
+=======
+    cb(null, '../public/uploads');
+  },
+  filename: function (req, file, cb) {
+    cb(null, "avatar-" + Date.now());
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5 // giới hạn kích thước tệp 5MB
+  },
+  fileFilter: function (req, file, cb) {
+    // kiểm tra định dạng tệp
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new Error("Only image files are allowed!"));
+    }
+    cb(null, true);
+  }
+}).single("avatar");
+
+router.post("/update-avatar", (req, res) => {
+  upload(req, res, (err) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).send(err.message);
+    }
+    const user = req.session.user;
+    user.avatar = req.file.filename;
+    User.findOneAndUpdate({ email: user.email }, { avatar: user.avatar }, (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send("Internal Server Error");
+      }
+      res.redirect("/profile");
+    })
+  })
+})
+
+
+
+/////////////////////search//////////////////
+>>>>>>> Stashed changes
 
 router.post("/search", async (req, res) => {
   if (req.session.isLoggedIn) {
@@ -403,6 +522,7 @@ router.post("/search", async (req, res) => {
   }
 });
 
+<<<<<<< Updated upstream
 // Route để xử lý request upload avatar
 router.post("/update-avatar", upload.single("avatar"), async (req, res) => {
   const user = await User.findById(req.user.id);
@@ -444,6 +564,10 @@ router.post("/change-password", (req, res) => {
     });
 });
 ///////////////////edit-profile////////
+=======
+
+//////////////////////sent mail///////////////
+>>>>>>> Stashed changes
 
 router.get("/get-send-email", async (req, res) => {
   if (req.session.isLoggedIn) {

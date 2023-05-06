@@ -9,7 +9,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "async": "^3.2.4",
     "bcrypt": "^5.1.0",
@@ -31,5 +30,6 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
-  }
+  },
+  "description": ""
 }

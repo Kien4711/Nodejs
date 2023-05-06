@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
     <title><%= user.username %> Profile</title>
+<<<<<<< Updated upstream
 </head>
 <body>
     <div class="d-flex justify-content-center align-items-center h-100">
@@ -53,3 +54,24 @@
 <script>
 </script>
 </html>
+=======
+  </head>
+  <body>
+    <h1><%= user.username %> Profile</h1>
+    <ul>
+      <img src="<%= user.avatar %>" alt="User Avatar">
+      <li>Full Name: <%= user.fullname %></li>
+      <li>Email: <%= user.email %></li>
+      <li>Phone: <%= user.phone %></li>
+      <li>Address: <%= user.address %></li>
+      <li>Birthday: <%= user.birthday.toDateString() %></li>
+    </ul>
+    <form action="/update-avatar" method="post" enctype="multipart/form-data">
+      <input type="file" name="avatar">
+      <button type="submit">Update Avatar</button>
+    </form>
+    <a href="/edit-profile">Edit Profile</a>
+    <a href="/change-password">Change Password</a>
+  </body>
+</html>
+>>>>>>> Stashed changes

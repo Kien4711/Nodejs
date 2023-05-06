@@ -70,6 +70,7 @@ mailCards.forEach(mailCard => {
     
 })
 
+<<<<<<< Updated upstream
 mailCards.forEach(mailCard => {
     const optionMail = mailCard.querySelector('.option-email');
     const mailTime = mailCard.querySelector('.date-email');
@@ -82,5 +83,42 @@ mailCards.forEach(mailCard => {
     mailCard.addEventListener('mouseleave', () => {
       mailTime.classList.remove('display-active');
       optionMail.classList.add('display-active');
+=======
+
+$(document).ready(function() {
+    $('#logout-link').click(function(event) {
+      event.preventDefault(); // ngăn chặn trình duyệt chuyển hướng đến href của thẻ a
+      $.ajax({
+        url: '/logout', // đường dẫn tới route xử lý đăng xuất
+        method: 'POST',
+        success: function(response) {
+          // thông báo người dùng và chuyển hướng đến trang đăng nhập
+          //alert(response.message);
+          alert("logout")
+          window.location.href = '/login';
+        },
+        error: function(error) {
+          // hiển thị thông báo lỗi nếu có lỗi xảy ra
+          alert(error.responseJSON.error);
+        }
+      });
+    });
+  });
+  
+  $(document).ready(function() {
+    $('.btnDetailMail-star').click(function() {
+      var emailId = $(this).data('email-id');
+      var url = '/emails/' + emailId + '/started';
+      $.ajax({
+        url: url,
+        method: 'POST',
+        success: function(response) {
+          alert(response.message);
+        },
+        error: function(error) {
+          alert(error.responseJSON.error);
+        }
+      });
+>>>>>>> Stashed changes
     });
   });
