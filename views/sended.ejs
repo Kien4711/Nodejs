@@ -103,6 +103,7 @@
         <% emailsToUser.forEach((email) => { %>
             <div class="email-zoom-out">
                 <input type="checkbox" name="selected-email" id="checkbox-Selected-Email">
+                <span><button type="button" class="fa fa-star-o btnDetailMail-star"></button></span>
                 <a href="#" class="email-content">
                     <span>To <%= email.to %></span>
                     <span class="email-sub-content"><%= email.text %></span>

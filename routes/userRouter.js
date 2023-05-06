@@ -7,7 +7,7 @@ const fs = require('fs');
 const bcrypt = require('bcrypt')
 const saltRounds = 10;
 const moment = require('moment')
-const multer = require('multer');
+
 const path = require('path')
 const session = require('express-session')
 const flash = require('connect-flash');
@@ -243,20 +243,22 @@ router.post('/change-password', async (req, res) => {
 
 
 /////////////////////////////////////////////////////////////////////
-router.get('/home', async(req, res) => {
+router.get('/home', async (req, res) => {
   if (req.session.isLoggedIn) {
-    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } });
-    res.render('home', { emailsToUser })
+    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } })
+
   }
   else {
     res.redirect('/login');
   }
-})
+});
+
 
 router.post('/home', async(req, res) => {
   if (req.session.isLoggedIn) {
-    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } });
-    res.render('home', { emailsToUser })
+    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } })
+    res.render('home', { emailsToUser});
+
   }
   else {
     res.redirect('/login');
@@ -264,6 +266,20 @@ router.post('/home', async(req, res) => {
 
 })
 
+/////////log out/////////////////////////////
+router.post('/logout', async (req, res) => {
+  try {
+    // Gửi thông báo cho người dùng (nếu có)
+
+    // Đăng xuất
+    req.session.destroy();
+
+    // Trả về trang đăng nhập
+    res.redirect('/login');
+  } catch (err) {
+    console.error(err);
+  }
+});
 ////////////////////////////Sent//////////////////////////////////////////
 
 router.post("/send-email", async (req, res) => {
@@ -296,7 +312,20 @@ router.get('/sended',async (req, res) => {
     res.redirect('/login');
   }
 })
-
+//////////////////////stared///////////
+// Route xử lý yêu cầu POST để cập nhật trạng thái started của email
+router.post('/emails/:id/started', function(req, res) {
+  var emailId = req.params.id;
+  Email.findByIdAndUpdate(emailId, { stared: true }, function(error, email) {
+    if (error) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (!email) {
+      return res.status(404).json({ error: 'Email not found' });
+    }
+    return res.json({ message: 'Email started successfully' });
+  });
+});
 ////////////profile/////////////////////
 router.get('/profile', async (req, res) => {
   try {
@@ -317,25 +346,54 @@ router.get('/profile', async (req, res) => {
 })
 
 
-
+/////////////////////////////change-avatar//////////////////
 // Thiết lập storage cho Multer
+const multer = require("multer")
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'public/uploads/')
+    cb(null, '../public/uploads');
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
+    cb(null, "avatar-" + Date.now());
   }
 });
 
-// Thiết lập upload cho Multer
-const upload = multer({ storage: storage })
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5 // giới hạn kích thước tệp 5MB
+  },
+  fileFilter: function (req, file, cb) {
+    // kiểm tra định dạng tệp
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new Error("Only image files are allowed!"));
+    }
+    cb(null, true);
+  }
+}).single("avatar");
 
-// Route để render form upload avatar
-router.get('/profile/update-avatar', async (req, res) => {
-  const user = await User.findById(req.session.id);
-  res.render('update-avatar', { user: user });
-});
+router.post("/update-avatar", (req, res) => {
+  upload(req, res, (err) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).send(err.message);
+    }
+    const user = req.session.user;
+    user.avatar = req.file.filename;
+    User.findOneAndUpdate({ email: user.email }, { avatar: user.avatar }, (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send("Internal Server Error");
+      }
+      res.redirect("/profile");
+    })
+  })
+})
+
+
+
+/////////////////////search//////////////////
 
 router.post('/search', async (req, res) => {
   if (req.session.isLoggedIn) {
@@ -360,15 +418,6 @@ router.post('/search', async (req, res) => {
   } else {
     res.redirect('/login');
   }
-});
-
-
-// Route để xử lý request upload avatar
-router.post('/update-avatar', upload.single('avatar'), async (req, res) => {
-  const user = await User.findById(req.user.userId);
-  user.avatar = '/uploads/' + req.file.filename; // Lưu đường dẫn của file ảnh vào trường 'avatar'
-  await user.save();
-  res.redirect('/profile/' + req.user.userId); // Chuyển hướng người dùng về trang profile của họ
 });
 
 
