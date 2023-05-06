@@ -34,13 +34,13 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="">
+                    <a href="starred" class="">
                         <span class="fa fa-star-o"></span>
                         <span>Starred</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="">
+                    <a href="trash" class="">
                         <span class="fa fa-trash-o"></span>
                         <span>Trash</span>
                     </a>
@@ -65,14 +65,15 @@
                         <span>
                           <%= label.nameLabel %>
                         </span>
-                        <button class="more-btn" onclick="toggleOptions(this)">
-                          <i class="fa fa-ellipsis-v"></i>
+                      </a>
+                      <div class="option-email">
+                        <button class="more-btn fa fa-ellipsis-v" onclick="toggleOptions(this)">
                         </button>
                         <div class="more-options">
                           <button class="edit-btn">Edit</button>
                           <button class="delete-btn">Delete</button>
                         </div>
-                      </a>
+                    </div>
                     </div>
                     <% }); %>
                   </li>
@@ -100,7 +101,7 @@
 
     <div class="main-content">
         <header>
-            <button type="" class="btn-write-Email">
+            <button type="button" class="btn-write-Email">
                 <label for="">
                     <span class="fa fa-pencil-square-o"></span>
                 </label>
@@ -109,24 +110,21 @@
 
             <form action="/search" method="POST">
                 <div class="search-wrapper">
-                  <span class="fa fa-search"></span>
+                    <span ><button type="submit" class="fa fa-search btn-search"></button></span>
                   <input type="search" placeholder="Search here" name="keyword" id="search-input">
                 </div>
-                <button type="submit">Search</button>
-              </form>
-              
+            </form>
 
             <button class="user-wrapper" id="user-wrapper">
                 <img src="/images/meiko.png" alt="">
                 <div>
-                    <h4>Meiko</h4>
+                    <h4>User</h4>
                     <small>User</small>
-                </div>
+                  </div>
+                  
             </button>
         </header>
     </div>
-
-
 
     <main class="home-main">
         <div class="sub-header">
@@ -161,6 +159,11 @@
                         <%= email.sentAt %>
                     </span>
                 </a>
+                <div class="option-email display-active">
+                    <span><button type="button" class="fa fa-exclamation-circle btnDeatilMail-spam"></button></span>
+                    <span><button type="button" class="fa fa-trash-o btnDeatilMail-delete"></button></span>
+                    <span><button type="button" class="fa fa-ban btnDeatilMail-delete"></button></span>
+                </div>
             </div>
             <% }); %>
                 </div>
@@ -168,15 +171,16 @@
     <div class="user-menu display-menu-user">
         <table>
             <tbody>
-                <tr class="profile">
-                    <td> <a href=""><i class="fa fa-user"></i> Profile</a></td>
+                <tr class="profile-routes">
+                    <td> <a href="#" id="profile-link"><i class="fa fa-user"></i> Profile</a></td>
                 </tr>
-                <tr class="setting">
-                    <td> <a href=""><i class="fa fa-cog"></i> Setting</a></td>
+                <tr class="setting-routes">
+                    <td> <a href="" id="setting-link"><i class="fa fa-cog"></i> Setting</a></td>
                 </tr>
-                <tr class="logout">
-                    <td> <a href=""><i class="fa fa-sign-out"></i> Logout</a></td>
+                <tr class="logout-routes">
+                    <td><a href="#" id="logout-link"><i class="fa fa-sign-out"></i> Logout</a></td>
                 </tr>
+                  
             </tbody>
         </table>
     </div>

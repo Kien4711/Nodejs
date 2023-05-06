@@ -10,12 +10,11 @@
     <script src="https://kit.fontawesome.com/e7cea346e1.js" crossorigin="anonymous"></script>
     <!-- <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-
     <link type="text/css" rel="stylesheet" href="/stylesheets/style.css">
     <title>Home</title>
 </head>
 
-<body data-tittle="home-detail-email">
+<body data-tittle="home-email">
     <div class="sidebar">
         <div class="sidebar-brand">
             <h2><span class="fa fa-envelope"></span>Mailer</h2>
@@ -23,25 +22,25 @@
         <div class="sidebar-menu">
             <ul>
                 <li>
-                    <a href="/home" class="active">
+                    <a href="home" class="">
                         <span class="fa fa-inbox"></span>
                         <span>Inbox</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/sended" class="">
+                    <a href="sended"  class="">
                         <span class="fa fa-paper-plane"></span>
                         <span>Sent</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="">
+                    <a href="starred" class="active">
                         <span class="fa fa-star-o"></span>
                         <span>Starred</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="">
+                    <a href="trash" class="">
                         <span class="fa fa-trash-o"></span>
                         <span>Trash</span>
                     </a>
@@ -59,14 +58,31 @@
                         </button>
                     </a>
                 </li>
+                <li>
+
+                  </li>
+                  <script>
+                    function toggleOptions(button) {
+                      const options = button.parentNode.querySelector(".more-options");
+                      options.classList.toggle("show");
+                    }
+                  </script>
+                  
+                  <style>
+                    .more-options {
+                      display: none;
+                    }
+                    .more-options.show {
+                      display: block;
+                    }
+                  </style>
             </ul>
         </div>
-
     </div>
 
     <div class="main-content">
         <header>
-            <button type="" class="btn-write-Email">
+            <button type="button" class="btn-write-Email">
                 <label for="">
                     <span class="fa fa-pencil-square-o"></span>
                 </label>
@@ -75,11 +91,15 @@
 
             <form action="/search" method="POST">
                 <div class="search-wrapper">
-                    <span><button type="submit" class="fa fa-search btn-search"></button></span>
-                    <input type="search" placeholder="Search here" name="keyword" id="search-input">
+                    <span ><button type="submit" class="fa fa-search btn-search"></button></span>
+                  <input type="search" placeholder="Search here" name="keyword" id="search-input">
                 </div>
             </form>
-
+            <div class="email-list">
+                <ul id="email-list-ul">
+                    <!-- email list items will be added here dynamically using JavaScript -->
+                </ul>
+            </div>
 
             <button class="user-wrapper" id="user-wrapper">
                 <img src="/images/meiko.png" alt="">
@@ -91,12 +111,10 @@
         </header>
     </div>
 
-    <main class="main-content-mail-detail">
+
+
+    <main class="sended-container">
         <div class="sub-header">
-            <span><button type="button" class="fa fa-arrow-left btnDetailMail-back-to-home"> </button></span>
-            <span><button type="button" class="fa fa-exclamation-circle btnDeatilMail-spam"></button></span>
-            <span><button type="button" class="fa fa-trash-o btnDeatilMail-delete"></button></span>
-            <span><button type="button" class="fa fa-tags btnDeatilMail-add-labels"></button></span>
             <span class="directional">
                 <span>
                     <a href="#" class="back-to-page">
@@ -111,53 +129,25 @@
                 </span>
             </span>
         </div>
-        <div class="mail-detail-container">
-            <div class="mail-detail-header">
-                <h3>
-                    <%= emails[0].subject %>
-                </h3>
 
-                <div><button class="btn-label-of-mail">inbox</button></div>
+        <% emailsToUser.forEach((email) => { %>
+            <div class="email-zoom-out">
+                <input type="checkbox" name="selected-email" id="checkbox-Selected-Email">
+                <span><button type="button" class="fa fa-star btnDetailMail-star"></button></span>
+                <a href="#" class="email-content">
+                    <span class="email-receiver">To <%= email.to %></span>
+                    <span class="email-sub-content"><%= email.text %></span>
+                    <span class="date-email"><%= email.sentAt %></span>
+                </a>
+                <div class="option-email display-active">
+                    <span><button type="button" class="fa fa-exclamation-circle btnDeatilMail-spam"></button></span>
+                    <span><button type="button" class="fa fa-trash-o btnDeatilMail-delete"></button></span>
+                    <span><button type="button" class="fa fa-ban btnDeatilMail-delete"></button></span>
+                </div>
             </div>
-            <% emails.forEach((email)=> { %>
-                <div class="mail-detail-main">
-                    <div class="main-detail-sub-header">
-                        <img src="../images/meiko.png" alt="">
-                        <div class="inf-of-send-mail">
-                            <span>
-                                <span class="username">
-                                    <%=userName.fullname%>
-                                </span>
-                                <span>"<"<%=email.from%>">"</span>
-                            </span>
-                            <span class="infor-mail-sender">to bcc: <%=email.to%></span>
-                        </div>
-                        <div class="time-to-send-mail">
-                            <%=email.sentAt%>
-                        </div>
-                        <div class="btnDetailMail">
-                            <span><button type="button" class="fa fa-star-o btnDetailMail-star"></button></span>
-                            <span><button type="button" class="fa fa-reply btnDetailMail-reply-extra"></button></span>
-                        </div>
-                    </div>
+          <% }); %>
+        
 
-                    <div class="main-detail-content">
-                        <div class="content-of-mail">
-                            <%=email.text%>
-                        </div>
-                        <div class="line"></div>
-
-                    </div>
-                <% }); %>
-                    
-                </div>
-                <div class="container-btn-send-and-forward">
-                    <div><button type="button" class="fa fa-reply btnDetailMail-reply-main"><span>Reply</span></button>
-                    </div>
-                    <div><button type="button"
-                            class="fa fa-share btnDetailMail-forward-main"><span>Forward</span></button></div>
-                </div>
-        </div>
         </div>
     </main>
     <div class="user-menu display-menu-user">
@@ -192,10 +182,10 @@
             <button class="btn-select-file fa fa-file" onclick="document.getElementById('fileInput').click();"></button>
         </div>
     </form>
-<<<<<<< Updated upstream
 
     <div class="container-label-box overlay label-active">
         <div class="new-label-box">
+
             <div class="div-title">
                 <span class="title-label-box">New label</span>
                 <button type="" class="btn-close-label-box"><i class="fa fa-times"></i></button>
@@ -212,6 +202,5 @@
     </div>
 </body>
 <script type="text/javascript" src="/javascripts/main.js"></script>
-<script type="text/javascript" src="/javascripts/detailMail.js">
-</script>
+
 </html>
