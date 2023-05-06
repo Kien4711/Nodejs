@@ -71,7 +71,7 @@ async function getAllLabel(req) {
   const allLabels = await Label.find({
     user: { $in: req.session.user.email }
   });
-  
+
   return allLabels;
 }
 
@@ -90,7 +90,7 @@ router.get("/", function (req, res) {
 router.get("/login", loginValidator, function (req, res) {
   const error = req.flash("error") || "";
 
-    res.render("login", { error });
+  res.render("login", { error });
 });
 
 router.post("/login", loginValidator, async (req, res) => {
@@ -138,7 +138,7 @@ router.post("/login", loginValidator, async (req, res) => {
     });
 
     const getLabels = await getAllLabel(req)
-  
+
     res.render("home", { emailsToUser, getLabels });
   } catch (err) {
     return res.status(500).json({ code: 3, message: "Internal server error" });
@@ -565,7 +565,7 @@ router.post('/labels/update/:name/:newLabel', async (req, res) => {
 
     const updatedLabel = await Label.updateOne(
       { user: req.session.user.email, nameLabel: oldLabel },
-      { $set: { nameLabel: newLabel }}
+      { $set: { nameLabel: newLabel } }
     );
 
     res.status(200).json(updatedLabel);
@@ -582,27 +582,27 @@ router.get('/email/:id', async (req, res) => {
     const emailID = req.params.id;
 
     const userName = await User.findOne({ email: req.session.user.email })
-  const emailOld = await Email.findById(emailID);
+    const emailOld = await Email.findById(emailID);
 
     var replyUser = ''
     if (req.session.user.email != emailOld.from) {
       replyUser = emailOld.from
-  }
-
-  for (const recipient of emailOld.to) {
-    if (req.session.user.email != recipient) {
-      replyUser = recipient
-      await newEmail.save();
     }
-  }
 
-  const emailOriginal = await Email.findById(emailID);
-  const listEmailReply = await Email.find({ parentID: emailID })
-  const emails = [emailOriginal].concat(listEmailReply);
+    for (const recipient of emailOld.to) {
+      if (req.session.user.email != recipient) {
+        replyUser = recipient
+        await newEmail.save();
+      }
+    }
 
-  const getLabels = await getAllLabel(req)
+    const emailOriginal = await Email.findById(emailID);
+    const listEmailReply = await Email.find({ parentID: emailID })
+    const emails = [emailOriginal].concat(listEmailReply);
 
-    res.render('detailMail', { emails, userName, getLabels ,replyUser});
+    const getLabels = await getAllLabel(req)
+
+    res.render('detailMail', { emails, userName, getLabels, replyUser });
   }
   else {
     res.redirect("/login");
@@ -651,32 +651,27 @@ router.post('/emails/:id/delete-label/:label', async (req, res) => {
 
 router.post('/emails/:id/forward', async (req, res) => {
   try {
-    const emailId = req.params.id;
+    const emailID = req.params.id;
     const forwardTo = req.body.forwardTo;
     const forwardBody = req.body.forwardBody;
-    console.log('demo1')
-    console.log(emailId)
-    console.log(forwardTo)
-    console.log(forwardBody)
-    console.log(req.session.user.email)
 
-    const email = await Email.findById(emailId);
-    
+    const email = await Email.findById(emailID);
+
     const newEmail = new Email({
       from: req.session.user.email,
       to: forwardTo,
       subject: email.subject,
       text: forwardBody,
-      parentID: emailId
+      parentID: emailID
     });
     await newEmail.save();
-     const emailOriginal = await Email.findById(emailID);
-  const listEmailReply = await Email.find({ parentID: emailID })
-  const emails = [emailOriginal].concat(listEmailReply);
+    const emailOriginal = await Email.findById(emailID);
+    const listEmailReply = await Email.find({ parentID: emailID })
+    const emails = [emailOriginal].concat(listEmailReply);
 
-  const getLabels = await getAllLabel(req)
+    const getLabels = await getAllLabel(req)
 
-  res.render('detailMail', { emails, userName, getLabels });
+    res.render('detailMail', { emails, userName, getLabels });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -685,7 +680,7 @@ router.post('/emails/:id/forward', async (req, res) => {
 router.post('/email/reply/:id', async (req, res) => {
   const emailID = req.params.id;
   const emailOld = await Email.findById(emailID);
-  const userName = await User.findOne({ email:req.session.user.email});
+  const userName = await User.findOne({ email: req.session.user.email });
   const { email, message } = req.body;
 
   if (req.session.user.email == emailOld.from) {
