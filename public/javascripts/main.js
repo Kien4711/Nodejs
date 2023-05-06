@@ -29,6 +29,8 @@
         mailBox.classList.add("display-mail-box");
     })
 
+    ////////////////reply mail box////////////////////
+
     btnReplyMail.addEventListener('click', () => {
       replyMailBox.classList.remove("display-mail-box");
     })
@@ -36,6 +38,8 @@
     btnCloseReplyMailBox.addEventListener('click', () => {
       replyMailBox.classList.add("display-mail-box");
     })
+
+    ///////////////////forward mail box////////////////////
 
     btnForwardMail.addEventListener('click', () => {
       forwardMailBox.classList.remove("display-forward-box");

@@ -150,7 +150,6 @@
                 <div class="container-btn-send-and-forward">
                     <div><button type="button" class="fa fa-reply btnDetailMail-reply-main"><span>Reply</span></button>
                     </div>
-<<<<<<< Updated upstream
                     <div><button type="button"
                             class="fa fa-share z-forward-main btnDetailMail-forward-main"><span>Forward</span></button></div>
                 </div>
@@ -160,12 +159,12 @@
                         <div class="reply-mail-box-container">
                             <div class="reply-mail-box">
                                 <div class="r1">
-<<<<<<< Updated upstream
+
                                     <button class="reply-or-forward-menu"><span class="fa fa-reply"></span><span class="fa fa-sort-desc"></span></button>
                                     <span>To <input  value="<%=replyUser%>" type="text" id="email" name="email" placeholder="" required></span>
                                 </div> 
                                 <textarea id="message" name="message" placeholder="Write something.." required></textarea>
-=======
+
                                     <button class="reply-or-forward-menu"><span class="fa fa-reply"></span><span
                                             class="fa fa-sort-desc"></span></button>
                                     <span>To <input value="<%=replyUser%>" type="text" id="email" name="email"
@@ -173,7 +172,7 @@
                                 </div>
                                 <textarea id="message" name="message" placeholder="Write something.."
                                     required></textarea>
->>>>>>> Stashed changes
+
                                 <div class="container-btn-reply-email">
                                     <input type="submit" value="Send">
                                     <input type="file" id="fileInput-reply">
@@ -184,17 +183,13 @@
                         </div>
                     </form>
                 </div>
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
                 <div>
                     <form action="/email/forward/<%= emails[0]._id %>"  method="post" id="forward-mail-box" class="display-forward-box">
                         <button type="" class="btn-close-forward-mail-box"><i class="fa fa-times"></i></button>
                         <div class="forward-mail-box-container">
                             <div class="forward-mail-box">
                                 <div class="r1">
-<<<<<<< Updated upstream
                                     <button class="forward-or-forward-menu"><span class="fa fa-forward"></span><span class="fa fa-sort-desc"></span></button>
                                     <span>Forward to <input type="text" id="email" name="email" placeholder="" required></span>
                                 </div> 
@@ -203,29 +198,12 @@
                                     <input type="submit" value="Send">
                                     <input type="file" id="fileInput-forward">
                                     <button class="btn-select-file-forward fa fa-file" onclick="document.getElementById('fileInput-forward').click();"></button>
-=======
-                                    <button class="forward-or-forward-menu"><span class="fa fa-forward"></span><span
-                                            class="fa fa-sort-desc"></span></button>
-                                    <span>Forward to <input type="text" id="email" name="email" placeholder=""
-                                            required></span>
-                                </div>
-                                <textarea id="message" name="message" placeholder="Write something.."
-                                    required></textarea>
-                                <div class="container-btn-forward-email">
-                                    <input type="submit" value="Send">
-                                    <input type="file" id="fileInput-forward">
-                                    <button class="btn-select-file-forward fa fa-file"
-                                        onclick="document.getElementById('fileInput-forward').click();"></button>
->>>>>>> Stashed changes
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
         </div>
         </div>
     </main>
@@ -264,27 +242,6 @@
 
     
 <!-- 
-=======
-    <form action="/send-email" method="post" id="reply-mail-box" class="display-mail-box">
-        <div class="reply-mail-box-container">
-            <div class="reply-mail-box">
-                <div class="r1">
-                    <button class="reply-or-forward-menu"><span class="fa fa-reply"></span><span
-                            class="fa fa-sort-desc"></span></button>
-                    <span>To <input type="text" id="email" name="email" placeholder="" required></span>
-                </div>
-                <textarea id="message" name="message" placeholder="Write something.." required></textarea>
-                <div class="container-btn-reply-email">
-                    <input type="submit" value="Send">
-                    <input type="file" id="fileInput-reply">
-                    <button class="btn-select-file-reply fa fa-file"
-                        onclick="document.getElementById('fileInput-reply').click();"></button>
-                </div>
-            </div>
-        </div>
-    </form>
-    <!-- 
->>>>>>> Stashed changes
     <form action="/send-email" method="post" class="forward-mail-box">
         <button type="" class="btn-close-mail-box"><i class="fa fa-times"></i></button>
         <h4>New Message</h4>

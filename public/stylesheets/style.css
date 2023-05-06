@@ -1751,3 +1751,11 @@ form#forward-mail-box {
   width: fit-content;
   font-size: 15px;
 }
+
+.display-forward-box{
+  display: none;
+}
+
+.display-reply-box{
+  display: none;
+}
