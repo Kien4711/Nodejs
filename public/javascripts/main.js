@@ -38,11 +38,11 @@
     })
 
     btnForwardMail.addEventListener('click', () => {
-      replyMailBox.classList.remove("display-mail-box");
+      forwardMailBox.classList.remove("display-forward-box");
     })
 
     btnCloseForwardMailBox.addEventListener('click', () => {
-      replyMailBox.classList.add("display-mail-box");
+      forwardMailBox.classList.add("display-forward-box");
     })
 
     let isMenuOpen = false;
@@ -75,10 +75,10 @@
         formData.append('file', file);
     })
     // // Lắng nghe sự kiện click vào link Profile
-    // linkToProfile.addEventListener("click", function(event) {
-    //     event.preventDefault(); // Ngăn chặn chuyển hướng đến trang khác khi click vào link
-    //     window.location.href = "/profile"; // Chuyển hướng đến trang profile của người dùng đang đăng nhập
-    // });
+    linkToProfile.addEventListener("click", function(event) {
+        event.preventDefault(); // Ngăn chặn chuyển hướng đến trang khác khi click vào link
+        window.location.href = "/profile"; // Chuyển hướng đến trang profile của người dùng đang đăng nhập
+    });
 
 
 let isStar = false;

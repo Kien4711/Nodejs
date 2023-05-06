@@ -49,23 +49,12 @@ const authToken = process.env.twilio_AUTH_TOKEN;
 const twilioNumber = process.env.twilio_Phone;
 const client = require("twilio")(accountSid, authToken);
 
-function formatPhoneNumber(phoneNumber) {
-    const regex = /^0(\d{9})$/; // match 10 digits after '0'
-    const match = phoneNumber.match(regex);
-  
-    if (match) {
-      return `+84${match[1]}`; // add country code and remove leading '0'
-    }
-  
-    throw new Error('Invalid phone number');
-  }
-  
 async function sendOTP(phoneNumber, otp) {
   try {
     const message = await client.messages.create({
       body: `Your OTP is ${otp}`,
       from: twilioNumber,
-      to: formatPhoneNumber(phoneNumber)
+      to: phoneNumber,
     });
     console.log(message.sid);
     return message.sid;
@@ -82,7 +71,7 @@ async function getAllLabel(req) {
   const allLabels = await Label.find({
     user: { $in: req.session.user.email }
   });
-  console.log('test ' + allLabels);
+
   return allLabels;
 }
 
@@ -99,12 +88,9 @@ router.get("/", function (req, res) {
 
 ////////////////////login//////////////////////////////////////////////////////
 router.get("/login", loginValidator, function (req, res) {
-
   const error = req.flash("error") || "";
 
-  if (req.session.u)
-
-    res.render("login", { error });
+  res.render("login", { error });
 });
 
 router.post("/login", loginValidator, async (req, res) => {
@@ -119,10 +105,9 @@ router.post("/login", loginValidator, async (req, res) => {
       console.log(message);
       break;
     }
-
     req.flash("error", message);
+    return res.redirect("/login");
 
-    return res.render("/login");
   }
 
   try {
@@ -140,10 +125,11 @@ router.post("/login", loginValidator, async (req, res) => {
 
     const match = await bcrypt.compare(req.body.password, user.password);
     if (!match) {
-      req.flash('error', 'Incorrect password');
-      return res.redirect('/login');
+      req.flash("error", "Incorrect password");
+      return res.redirect("/login");
     }
 
+    // Login successful
     req.session.user = user;
     req.session.isLoggedIn = true;
 
@@ -152,13 +138,12 @@ router.post("/login", loginValidator, async (req, res) => {
     });
 
     const getLabels = await getAllLabel(req)
-    req.flash("emailsToUser", emailsToUser);
+
     res.render("home", { emailsToUser, getLabels });
   } catch (err) {
     return res.status(500).json({ code: 3, message: "Internal server error" });
   }
 });
-
 
 ///////////////////register/////////////////////////////////////////////////////////////
 
@@ -210,6 +195,7 @@ router.post("/register", registerValidator, async (req, res) => {
     });
 
     await newUser.save();
+
     return res.redirect("/login");
   } catch (err) {
     console.error(err);
@@ -226,86 +212,74 @@ router.post("/register/verify-otp", (req, res) => {
 });
 //////////////////////////////////////////////////////
 router.get("/change-password", (req, res) => {
-  res.render("change-password", { error: null });
+  res.render("change-password", { errors: null });
 });
 
 // Route to handle change password request
 router.post("/change-password", async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
 
-  try {
-    // Find the user
-    const user = await User.findOne(req.session.user)
+  // Validate inputs
+  const errors = [];
 
-    // Check if the old password is correct
-    const isMatch = await bcrypt.compare(oldPassword, user.password)
-    if (!isMatch) {
-      throw new Error('Current password is incorrect' + user.email)
-    }
-
-    // Validate the new password
-    if (newPassword !== confirmPassword) {
-      throw new Error('Confirm password do not match')
-    }
-
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10)
-
-    // Update the user's password in the database
-    await User.findOneAndUpdate({ email: user.email }, { password: hashedPassword })
-
-    // Delete the session and redirect to login page
-    req.session.destroy(err => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Server error')
-      } else {
-        res.redirect('/login');
-      }
-    });
-  } catch (error) {
-    res.render('change-password', { error: error });
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    errors.push({ msg: "Please fill in all fields" });
   }
-})
 
+  if (newPassword !== confirmPassword) {
+    errors.push({ msg: "New password and confirm password do not match" });
+  }
+
+  // Check if old password is correct
+  const user = await User.findById(req.user.id);
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+  if (!isMatch) {
+    errors.push({ msg: "Old password is incorrect" });
+  }
+
+  // If there are errors, render the form with errors
+  if (errors.length > 0) {
+    return res.render("change-password", { errors });
+  }
+
+  // Encrypt new password and save to database
+  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+  user.password = hashedPassword;
+  await user.save();
+
+  req.flash("success_msg", "Password changed successfully");
+  res.redirect("/home");
+});
 
 /////////////////////////////////////////////////////////////////////
-router.get('/home', async (req, res) => {
+router.get("/home", async (req, res) => {
   if (req.session.isLoggedIn) {
-    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } })
+    const emailsToUser = await Email.find({
+      to: { $in: [req.session.user.email] },
+    });
 
-  }
-  else {
-    res.redirect('/login');
+    const getLabels = await getAllLabel(req)
+
+    res.render("home", { emailsToUser, getLabels });
+  } else {
+    res.redirect("/login");
   }
 });
 
-
-router.post('/home', async(req, res) => {
+router.post("/home", async (req, res) => {
   if (req.session.isLoggedIn) {
-    const emailsToUser = await Email.find({ to: { $in: [req.session.user.email] } })
-    res.render('home', { emailsToUser});
+    const emailsToUser = await Email.find({
+      to: { $in: [req.session.user.email] },
+    });
+    const getLabels = await getAllLabel(req)
+    res.render("home", { emailsToUser, getLabels });
 
-  }
-  else {
-    res.redirect('/login');
-  }
-});
-
-/////////log out/////////////////////////////
-router.post('/logout', async (req, res) => {
-  try {
-    // Gửi thông báo cho người dùng (nếu có)
-
-    // Đăng xuất
-    req.session.destroy();
-
-    // Trả về trang đăng nhập
-    res.redirect('/login');
-  } catch (err) {
-    console.error(err);
+  } else {
+    res.redirect("/login");
   }
 });
+
 ////////////////////////////Sent//////////////////////////////////////////
 
 router.post("/send-email", async (req, res) => {
@@ -335,64 +309,9 @@ router.get("/sended", async (req, res) => {
     res.redirect("/login");
   }
 });
-//////////////////////////////////////Star/////////////////////////////////
-
-router.get("/starred", async (req, res) => {
-  if (req.session.isLoggedIn) {
-    const emailsToUser = await Email.find({ from: req.session.user.email });
-
-    res.render("starred", { emailsToUser });
-  } else {
-    res.redirect("/login");
-  }
-});
-////////////////////////////Trash//////////////////////////////////////////
-
-router.get("/trash", async (req, res) => {
-  if (req.session.isLoggedIn) {
-    const emailsToUser = await Email.find({ from: req.session.user.email });
-
-    res.render("trash", { emailsToUser });
-  } else {
-    res.redirect("/login");
-  }
-})
-//////////////////////stared///////////
-// Route xử lý yêu cầu POST để cập nhật trạng thái started của email
-router.post('/emails/:id/started', function(req, res) {
-  var emailId = req.params.id;
-  Email.findByIdAndUpdate(emailId, { stared: true }, function(error, email) {
-    if (error) {
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    if (!email) {
-      return res.status(404).json({ error: 'Email not found' });
-    }
-    return res.json({ message: 'Email started successfully' });
-  });
-});
-////////////profile/////////////////////
-router.get('/profile', async (req, res) => {
-  try {
-    // Check if user is logged in
-    if (!req.session.user) {
-      return res.redirect('/login')
-    }
-
-    // Find the user
-    const user = await User.findOne(req.session.user)
-    console.log(user)
-    // Render the profile view and pass in the user object
-    res.render('profile', { user: user })
-  } catch (error) {
-    console.error(error)
-    res.status(500).send('Server error')
-  }
-})
-
 ////////////////////////////Draft//////////////////////////////////////////
-router.get("/draft", (req, res) => {
-  res.render("draft");
+router.get("/home/draft", (req, res) => {
+  res.render("home");
 });
 router.post("/home/draft", (req, res) => {
   res.render("home");
@@ -411,53 +330,24 @@ router.get("/profile/:id", async (req, res) => {
   }
 });
 
-/////////////////////////////change-avatar//////////////////
 // Thiết lập storage cho Multer
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, '../public/uploads');
+    cb(null, "public/uploads/");
   },
   filename: function (req, file, cb) {
-    cb(null, "avatar-" + Date.now());
-  }
+    cb(null, Date.now() + "-" + file.originalname);
+  },
 });
 
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 1024 * 1024 * 5 // giới hạn kích thước tệp 5MB
-  },
-  fileFilter: function (req, file, cb) {
-    // kiểm tra định dạng tệp
-    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-      return cb(new Error("Only image files are allowed!"));
-    }
-    cb(null, true);
-  }
-}).single("avatar");
+// Thiết lập upload cho Multer
+const upload = multer({ storage: storage });
 
-router.post("/update-avatar", (req, res) => {
-  upload(req, res, (err) => {
-    if (err) {
-      console.log(err);
-      return res.status(400).send(err.message);
-    }
-    const user = req.session.user;
-    user.avatar = req.file.filename;
-    User.findOneAndUpdate({ email: user.email }, { avatar: user.avatar }, (err) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).send("Internal Server Error");
-      }
-      res.redirect("/profile");
-    })
-  })
-})
-
-
-
-/////////////////////search//////////////////
+// Route để render form upload avatar
+router.get("/profile/:id/update-avatar", async (req, res) => {
+  const user = await User.findById(req.params.id);
+  res.render("update-avatar", { user: user });
+});
 
 router.post("/search", async (req, res) => {
   if (req.session.isLoggedIn) {
@@ -487,8 +377,47 @@ router.post("/search", async (req, res) => {
   }
 });
 
+// Route để xử lý request upload avatar
+router.post("/update-avatar", upload.single("avatar"), async (req, res) => {
+  const user = await User.findById(req.user.id);
+  user.avatar = "/uploads/" + req.file.filename; // Lưu đường dẫn của file ảnh vào trường 'avatar'
+  await user.save();
+  res.redirect("/profile/" + req.user.id); // Chuyển hướng người dùng về trang profile của họ
+});
 
-//////////////////////sent mail///////////////
+//////////////////chang password//////////////
+router.post("/change-password", (req, res) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+  const userId = req.session.userId;
+
+  // TODO: validate input
+
+  // check if current password is correct
+  User.findById(userId)
+    .then((user) => {
+      return bcrypt.compare(currentPassword, user.password);
+    })
+    .then((isMatch) => {
+      if (!isMatch) {
+        throw new Error("Current password is incorrect");
+      }
+
+      // hash new password
+      return bcrypt.hash(newPassword, 10);
+    })
+    .then((hashedPassword) => {
+      // update user password in db
+      return User.findByIdAndUpdate(userId, { password: hashedPassword });
+    })
+    .then(() => {
+      // redirect to profile page
+      res.redirect("/profile");
+    })
+    .catch((error) => {
+      res.render("change-password", { error });
+    });
+});
+///////////////////edit-profile////////
 
 router.get("/get-send-email", async (req, res) => {
   if (req.session.isLoggedIn) {
@@ -511,53 +440,38 @@ router.get("/get-email", async (req, res) => {
     res.redirect("/login");
     console.log("error");
   }
-})
+});
 
-///////////////////edit-profile////////
 // Handle POST request to /edit-profile
-router.post("/edit-profile", async (req, res) => {
-  try {
-    // Get the current user from the session
-    const user = req.session.user;
+router.post("/edit-profile", (req, res) => {
+  // Get the current user from the session
+  const user = req.session.user;
 
-    // Get the new values for fullname, phone, address and birthday from the request body
-      const { fullname, phone, address, birthday } = req.body;
+  // Get the new values for fullname, phone, address and birthday from the request body
+  const { fullname, phone, address, birthday } = req.body;
 
-      // Create an object to store the new values for the user
-      const newValues = {};
-
-      if (fullname) {
-        newValues.fullname = fullname;
+  // Update the user in the database with the new values
+  User.findByIdAndUpdate(
+    user.userId,
+    {
+      fullname: fullname,
+      phone: phone,
+      address: address,
+      birthday: birthday,
+    },
+    { new: true },
+    (err, updatedUser) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        // Update the user in the session
+        req.session.user = updatedUser;
+        res.redirect("/profile");
       }
-      if (phone) {
-        newValues.phone = phone;
-      }
-      if (address) {
-        newValues.address = address;
-      }
-      if (birthday) {
-        newValues.birthday = birthday;
-      }
-
-      // Update the user in the database with the new values
-      const updatedUser = await User.findOneAndUpdate(
-        { email: user.email },
-        newValues,
-        { new: true }
-      );
-
-    if (!updatedUser) {
-      return res.status(404).send("User not found");
     }
-/////////////////
-    // Update the user in the session
-    req.session.user = updatedUser;
-    res.redirect("/profile");
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Internal Server Error");
-  }
-})
+  );
+});
 
 
 
@@ -650,10 +564,10 @@ router.post('/labels/update/:name/:newLabel', async (req, res) => {
     const newLabel = req.params.newLabel;
 
     const updatedLabel = await Label.updateOne(
-      { user: req.session.user.email, nameLabel: oldLabel }, 
+      { user: req.session.user.email, nameLabel: oldLabel },
       { $set: { nameLabel: newLabel } }
     );
-    
+
     res.status(200).json(updatedLabel);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -668,12 +582,27 @@ router.get('/email/:id', async (req, res) => {
     const emailID = req.params.id;
 
     const userName = await User.findOne({ email: req.session.user.email })
+    const emailOld = await Email.findById(emailID);
+
+    var replyUser = ''
+    if (req.session.user.email != emailOld.from) {
+      replyUser = emailOld.from
+    }
+
+    for (const recipient of emailOld.to) {
+      if (req.session.user.email != recipient) {
+        replyUser = recipient
+        await newEmail.save();
+      }
+    }
+
     const emailOriginal = await Email.findById(emailID);
     const listEmailReply = await Email.find({ parentID: emailID })
     const emails = [emailOriginal].concat(listEmailReply);
+
     const getLabels = await getAllLabel(req)
 
-    res.render('detailMail', { emails, userName ,getLabels});
+    res.render('detailMail', { emails, userName, getLabels, replyUser });
   }
   else {
     res.redirect("/login");
@@ -714,27 +643,51 @@ router.post('/emails/:id/delete-label/:label', async (req, res) => {
 
     await email.save();
 
-    return res.status(200).json({ message: 'Label deleted from email' });
+    return res.status(200).json({ message: 'Label deleted from em ail' });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 });
 
+router.post('/emails/forward/:id', async (req, res) => {
+  try {
+    const emailID = req.params.id;
+    const { forwardTo, forwardBody } = req.body;
+    
+    const email = await Email.findById(emailID);
 
+    const newEmail = new Email({
+      from: req.session.user.email,
+      to: forwardTo,
+      subject: email.subject,
+      text: forwardBody,
+      parentID: emailID
+    });
+    await newEmail.save();
+    const emailOriginal = await Email.findById(emailID);
+    const listEmailReply = await Email.find({ parentID: emailID })
+    const emails = [emailOriginal].concat(listEmailReply);
 
+    const getLabels = await getAllLabel(req)
 
-router.post('/email/reply/:id/:newText', async (req, res) => {
+    res.render('detailMail', { emails, userName, getLabels });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post('/email/reply/:id', async (req, res) => {
   const emailID = req.params.id;
   const emailOld = await Email.findById(emailID);
-
   const userName = await User.findOne({ email: req.session.user.email });
+  const { email, message } = req.body;
 
   if (req.session.user.email == emailOld.from) {
     newEmail = new Email({
       from: req.session.user.email,
-      to: emailOld.to,
+      to: email,
       subject: emailOld.subject,
-      text: req.params.newText,
+      text: message,
       parentID: emailID
     });
     await newEmail.save();
@@ -744,9 +697,9 @@ router.post('/email/reply/:id/:newText', async (req, res) => {
     if (req.session.user.email == recipient) {
       newEmail = new Email({
         from: req.session.user.email,
-        to: emailOld.from,
+        to: email,
         subject: emailOld.subject,
-        text: req.params.newText,
+        text: message,
         parentID: emailID
       });
       await newEmail.save();
@@ -759,10 +712,8 @@ router.post('/email/reply/:id/:newText', async (req, res) => {
 
   const getLabels = await getAllLabel(req)
 
-  res.render('detailMail', { emails, userName ,getLabels});
+  res.render('detailMail', { emails, userName, getLabels });
 });
-
-
 
 module.exports = router;
 //test branch

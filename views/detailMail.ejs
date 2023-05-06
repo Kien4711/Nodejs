@@ -72,15 +72,12 @@
                 </label>
                 Compose
             </button>
-
             <form action="/search" method="POST">
                 <div class="search-wrapper">
                     <span><button type="submit" class="fa fa-search btn-search"></button></span>
                     <input type="search" placeholder="Search here" name="keyword" id="search-input">
                 </div>
             </form>
-
-
             <button class="user-wrapper" id="user-wrapper">
                 <img src="/images/meiko.png" alt="">
                 <div>
@@ -90,8 +87,6 @@
             </button>
         </header>
     </div>
-
-
 
     <main class="main-content-mail-detail">
         <div class="sub-header">
@@ -151,34 +146,23 @@
 
                     </div>
                     <% }); %>
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
                 </div>
                 <div class="container-btn-send-and-forward">
                     <div><button type="button" class="fa fa-reply btnDetailMail-reply-main"><span>Reply</span></button>
                     </div>
 <<<<<<< Updated upstream
                     <div><button type="button"
-                            class="fa fa-share btnDetailMail-forward-main"><span>Forward</span></button></div>
+                            class="fa fa-share z-forward-main btnDetailMail-forward-main"><span>Forward</span></button></div>
                 </div>
                 <div>
                     <form action="/send-email" method="post" id="reply-mail-box" class="display-mail-box">
-=======
-                    <div><button type="button" class="fa fa-share z-forward-main"><span>Forward</span></button></div>
-                </div>
-                <div>
-                    <form action="/email/reply/<%= emails[0]._id %>" method="post" id="reply-mail-box"
-                        class="display-mail-box">
->>>>>>> Stashed changes
                         <button type="" class="btn-close-reply-mail-box"><i class="fa fa-times"></i></button>
                         <div class="reply-mail-box-container">
                             <div class="reply-mail-box">
                                 <div class="r1">
 <<<<<<< Updated upstream
                                     <button class="reply-or-forward-menu"><span class="fa fa-reply"></span><span class="fa fa-sort-desc"></span></button>
-                                    <span>To <input type="text" id="email" name="email" placeholder="" required></span>
+                                    <span>To <input  value="<%=replyUser%>" type="text" id="email" name="email" placeholder="" required></span>
                                 </div> 
                                 <textarea id="message" name="message" placeholder="Write something.." required></textarea>
 =======
@@ -205,7 +189,7 @@
 
 >>>>>>> Stashed changes
                 <div>
-                    <form action="/send-email" method="post" id="forward-mail-box" class="display-mail-box">
+                    <form action="/email/forward/<%= emails[0]._id %>"  method="post" id="forward-mail-box" class="display-forward-box">
                         <button type="" class="btn-close-forward-mail-box"><i class="fa fa-times"></i></button>
                         <div class="forward-mail-box-container">
                             <div class="forward-mail-box">
@@ -214,7 +198,7 @@
                                     <button class="forward-or-forward-menu"><span class="fa fa-forward"></span><span class="fa fa-sort-desc"></span></button>
                                     <span>Forward to <input type="text" id="email" name="email" placeholder="" required></span>
                                 </div> 
-                                <textarea id="message" name="message" placeholder="Write something.." required></textarea>
+                                <textarea id="message" name="message" placeholder="Write something123.." required></textarea>
                                 <div class="container-btn-forward-email">
                                     <input type="submit" value="Send">
                                     <input type="file" id="fileInput-forward">
@@ -243,10 +227,6 @@
 
 >>>>>>> Stashed changes
         </div>
-
-
-
-
         </div>
     </main>
     <div class="user-menu display-menu-user">
@@ -282,7 +262,6 @@
         </div>
     </form>
 
-<<<<<<< Updated upstream
     
 <!-- 
 =======
@@ -342,12 +321,8 @@
 </body>
 <script type="text/javascript" src="/javascripts/main.js"></script>
 <script type="text/javascript" src="/javascripts/detailMail.js">
-
 </script>
 
-<<<<<<< Updated upstream
 
 
-=======
->>>>>>> Stashed changes
 </html>
