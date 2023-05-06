@@ -28,19 +28,19 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/sended"  class="">
+                    <a href="/sended" class="">
                         <span class="fa fa-paper-plane"></span>
                         <span>Sent</span>
                     </a>
                 </li>
                 <li>
-                    <a href="starred" class="">
+                    <a href="#" class="">
                         <span class="fa fa-star-o"></span>
                         <span>Starred</span>
                     </a>
                 </li>
                 <li>
-                    <a href="trash" class="">
+                    <a href="#" class="">
                         <span class="fa fa-trash-o"></span>
                         <span>Trash</span>
                     </a>
@@ -60,39 +60,39 @@
                 </li>
                 <li>
                     <% getLabels.forEach((label)=> { %>
-                    <div class="email-zoom-out">
-                      <a href="/label/<%=label.nameLabel%>" >
-                        <span>
-                          <%= label.nameLabel %>
-                        </span>
-                      </a>
-                      <div class="option-email">
-                        <button class="more-btn fa fa-ellipsis-v" onclick="toggleOptions(this)">
-                        </button>
-                        <div class="more-options">
-                          <button class="edit-btn">Edit</button>
-                          <button class="delete-btn">Delete</button>
+                        <div class="email-zoom-out">
+                            <a href="/label/<%=label.nameLabel%>">
+                                <span>
+                                    <%= label.nameLabel %>
+                                </span>
+                                <button class="more-btn" onclick="toggleOptions(this)">
+                                    <i class="fa fa-ellipsis-v"></i>
+                                </button>
+                                <div class="more-options">
+                                    <button class="edit-btn">Edit</button>
+                                    <button class="delete-btn">Delete</button>
+                                </div>
+                            </a>
                         </div>
-                    </div>
-                    </div>
-                    <% }); %>
-                  </li>
-                  <script>
+                        <% }); %>
+                </li>
+                <script>
                     function toggleOptions(button) {
-                      const options = button.parentNode.querySelector(".more-options");
-                      options.classList.toggle("show");
+                        const options = button.parentNode.querySelector(".more-options");
+                        options.classList.toggle("show");
                     }
-                  </script>
-                  
-                  <style>
+                </script>
+
+                <style>
                     .more-options {
-                      display: none;
+                        display: none;
                     }
+
                     .more-options.show {
-                      display: block;
+                        display: block;
                     }
-                  </style>
-                  
+                </style>
+
 
             </ul>
         </div>
@@ -101,7 +101,7 @@
 
     <div class="main-content">
         <header>
-            <button type="button" class="btn-write-Email">
+            <button type="" class="btn-write-Email">
                 <label for="">
                     <span class="fa fa-pencil-square-o"></span>
                 </label>
@@ -110,21 +110,23 @@
 
             <form action="/search" method="POST">
                 <div class="search-wrapper">
-                    <span ><button type="submit" class="fa fa-search btn-search"></button></span>
-                  <input type="search" placeholder="Search here" name="keyword" id="search-input">
+                    <span class="fa fa-search"></span>
+                    <input type="search" placeholder="Search here" name="keyword" id="search-input">
                 </div>
+                <button type="submit">Search</button>
             </form>
 
             <button class="user-wrapper" id="user-wrapper">
                 <img src="/images/meiko.png" alt="">
                 <div>
-                    <h4>User</h4>
+                    <h4>Meiko</h4>
                     <small>User</small>
-                  </div>
-                  
+                </div>
             </button>
         </header>
     </div>
+
+
 
     <main class="home-main">
         <div class="sub-header">
@@ -159,11 +161,6 @@
                         <%= email.sentAt %>
                     </span>
                 </a>
-                <div class="option-email display-active">
-                    <span><button type="button" class="fa fa-exclamation-circle btnDeatilMail-spam"></button></span>
-                    <span><button type="button" class="fa fa-trash-o btnDeatilMail-delete"></button></span>
-                    <span><button type="button" class="fa fa-ban btnDeatilMail-delete"></button></span>
-                </div>
             </div>
             <% }); %>
                 </div>
@@ -171,30 +168,26 @@
     <div class="user-menu display-menu-user">
         <table>
             <tbody>
-                <tr class="profile-routes">
-                    <td> <a href="#" id="profile-link"><i class="fa fa-user"></i> Profile</a></td>
+                <tr class="profile">
+                    <td> <a href=""><i class="fa fa-user"></i> Profile</a></td>
                 </tr>
-                <tr class="setting-routes">
-                    <td> <a href="" id="setting-link"><i class="fa fa-cog"></i> Setting</a></td>
+                <tr class="setting">
+                    <td> <a href=""><i class="fa fa-cog"></i> Setting</a></td>
                 </tr>
-                <tr class="logout-routes">
-                    <td><a href="#" id="logout-link"><i class="fa fa-sign-out"></i> Logout</a></td>
+                <tr class="logout">
+                    <td> <a href=""><i class="fa fa-sign-out"></i> Logout</a></td>
                 </tr>
-                  
             </tbody>
         </table>
     </div>
 
-    <form action="/send-email" method="post" class="send-email-box display-mail-box">
-        <button type="" class="btn-close-mail-box"><i class="fa fa-times"></i></button>
+    <form id="send-email-form" action="/send-email" method="post" class="send-email-box display-mail-box">
+        <button id="close-btn" type="" class="btn-close-mail-box"><i class="fa fa-times"></i></button>
         <h4>New Message</h4>
         <input type="text" id="email" name="email" placeholder="Send to:" required>
-
         <input type="text" id="subject" name="subject" placeholder="Subject.." required>
-
         <label for="message">Message:</label>
         <textarea id="message" name="message" placeholder="Write something.." required></textarea>
-
         <div class="container-btn-send-message">
             <input type="submit" value="Send">
             <input type="file" id="fileInput">
@@ -227,15 +220,36 @@
 
 <script>
     const emailContentElements = document.querySelectorAll('.email-content');
-  
     emailContentElements.forEach((element) => {
-      element.addEventListener('click', (event) => {
-        event.preventDefault();
-        const emailId = element.getAttribute('data-email-id');
-        window.location.href = `/email/${emailId}`;
-      });
+        element.addEventListener('click', (event) => {
+            event.preventDefault();
+            const emailId = element.getAttribute('data-email-id');
+            window.location.href = `/email/${emailId}`;
+        });
     });
-  </script>
+</script>
+
+
+<script>
+    document.getElementById("close-btn").addEventListener("click", saveDraft);
+    console.log('demo')
+    // async function saveDraft() {
+    //     const form = document.getElementById("send-email-form");
+    //     const formData = new FormData(form);
+    //     formData.append("isDraft", "true");
+
+    //     const response = await fetch(form.action, {
+    //         method: "POST",
+    //         body: formData,
+    //     });
+
+    //     if (response.ok) {
+    //         console.log("Email saved as draft");
+    //     } else {
+    //         console.error("Failed to save email as draft");
+    //     }
+    // }
+</script>
 
 
 </html>
