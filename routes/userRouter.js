@@ -503,7 +503,6 @@ router.post("/labels", async (req, res) => {
       });
       req.flash("emailsToUser", emailsToUser);
       const getLabels = await getAllLabel(req)
-      req.flash("emailsToUser", emailsToUser);
       res.redirect("home");
     }
   }
@@ -512,27 +511,23 @@ router.post("/labels", async (req, res) => {
   }
 });
 router.get("/label/:name", async (req, res) => {
-
   if (req.session.isLoggedIn) {
     const name = req.params.name;
-    console.log()
     const emailsToUser = await Email.find({
       labels: { $in: [name] },
-      $or: [
-        { from: req.session.user.email },
-        { to: { $in: [req.session.user.email] } }
+      $and: [
+        { $or: [{ from: req.session.user.email }, { to: { $in: [req.session.user.email] } }] }
       ]
     });
-    const getLabels = await getAllLabel(req)
+    const getLabels = await getAllLabel(req);
     res.render("home", { emailsToUser, getLabels });
-  }
-  else {
+  } else {
     res.redirect("login");
   }
-})
+});
+
 
 router.delete('/labels/:name', async (req, res) => {
-  console.log('test delete label')
   try {
 
     const labelName = req.params.name;
@@ -580,8 +575,6 @@ router.get('/email/:id', async (req, res) => {
 
   if (req.session.isLoggedIn) {
     const emailID = req.params.id;
-
-    const userName = await User.findOne({ email: req.session.user.email })
     const emailOld = await Email.findById(emailID);
 
     var replyUser = ''
@@ -599,8 +592,9 @@ router.get('/email/:id', async (req, res) => {
     const emailOriginal = await Email.findById(emailID);
     const listEmailReply = await Email.find({ parentID: emailID })
     const emails = [emailOriginal].concat(listEmailReply);
-
+    const userName = await User.findOne({ email: req.session.user.email })
     const getLabels = await getAllLabel(req)
+
 
     res.render('detailMail', { emails, userName, getLabels, replyUser });
   }
@@ -609,18 +603,49 @@ router.get('/email/:id', async (req, res) => {
   }
 });
 
-
-router.put('/email/:id/label/:labelName', async (req, res) => {
+router.get('/email/label/:id/:labelName', async (req, res) => {
   try {
-    const email = await Email.findById(req.params.id);
-    email.labels.push(req.params.labelName);
-    await email.save();
-    res.status(200).json(email);
+    const updateEmail = await Email.findById(req.params.id);
+    const emailID = updateEmail._id
+
+    const emailOriginal = await Email.findById(emailID);
+    const listEmailReply = await Email.find({ parentID: emailID })
+    const emails = [emailOriginal].concat(listEmailReply);
+    const getLabels = await getAllLabel(req)
+    const userName = await User.findOne({ email: req.session.user.email })
+    const emailOld = await Email.findById(emailID);
+    var replyUser = ''
+    if (req.session.user.email != emailOld.from) {
+      replyUser = emailOld.from
+    }
+
+    for (const recipient of emailOld.to) {
+      if (req.session.user.email != recipient) {
+        replyUser = recipient
+        await newEmail.save();
+      }
+    }
+
+    const emailsContainLabel = await Email.find({
+      labels: { $in: [req.params.labelName] },
+      _id: emailID
+    });
+        if (!emailsContainLabel.isEmpty) {
+      const deletedLabel = await Label.deleteOne({ user: req.session.user.email, nameLabel: req.params.labelName });
+      res.render('detailMail', { emails, userName, getLabels, replyUser });
+    }
+
+    // Delete the label
+    updateEmail.labels.push(req.params.labelName);
+    await updateEmail.save(); // Save the changes made to the email document
+
+    res.render('detailMail', { emails, userName, getLabels, replyUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to add label to email" });
   }
 });
+
 
 router.post('/emails/:id/delete-label/:label', async (req, res) => {
   try {
@@ -638,9 +663,7 @@ router.post('/emails/:id/delete-label/:label', async (req, res) => {
     if (index === -1) {
       return res.status(400).json({ message: 'Label not found on email' });
     }
-
     email.labels.splice(index, 1);
-
     await email.save();
 
     return res.status(200).json({ message: 'Label deleted from em ail' });
@@ -649,28 +672,41 @@ router.post('/emails/:id/delete-label/:label', async (req, res) => {
   }
 });
 
-router.post('/emails/forward/:id', async (req, res) => {
+router.post('/email/forward/:id', async (req, res) => {
   try {
     const emailID = req.params.id;
-    const { forwardTo, forwardBody } = req.body;
-    
-    const email = await Email.findById(emailID);
+    const { email, message } = req.body;
+    const emailOld = await Email.findById(emailID);
 
     const newEmail = new Email({
       from: req.session.user.email,
-      to: forwardTo,
-      subject: email.subject,
-      text: forwardBody,
+      to: email,
+      subject: emailOld.subject,
+      text: message,
       parentID: emailID
     });
+
+    var replyUser = ''
+    if (req.session.user.email != emailOld.from) {
+      replyUser = emailOld.from
+    }
+
+    for (const recipient of emailOld.to) {
+      if (req.session.user.email != recipient) {
+        replyUser = recipient
+        await newEmail.save();
+      }
+    }
+
     await newEmail.save();
     const emailOriginal = await Email.findById(emailID);
     const listEmailReply = await Email.find({ parentID: emailID })
     const emails = [emailOriginal].concat(listEmailReply);
-
     const getLabels = await getAllLabel(req)
+    const userName = await User.findOne({ email: req.session.user.email });
 
-    res.render('detailMail', { emails, userName, getLabels });
+
+    res.render('detailMail', { emails, userName, getLabels, replyUser });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -709,9 +745,7 @@ router.post('/email/reply/:id', async (req, res) => {
   const emailOriginal = await Email.findById(emailID);
   const listEmailReply = await Email.find({ parentID: emailID })
   const emails = [emailOriginal].concat(listEmailReply);
-
   const getLabels = await getAllLabel(req)
-
   res.render('detailMail', { emails, userName, getLabels });
 });
 

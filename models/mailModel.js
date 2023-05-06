@@ -7,13 +7,13 @@ const emailSchema = new mongoose.Schema({
   text: { type: String},
   stared: { type: Boolean, default: false},
   sentAt: { type: Date, default: Date.now },
-  labels: [{ type: String }],
+  labels: { type: [String] },
   attachments: [{
     fileName: { type: String},
     contentType: { type: String},
     content: { type: Buffer,},
   }],
-  parentID:[{type: String}]
+  parentID:{type: String},
 });
 
 const Email = mongoose.model('Email', emailSchema);
