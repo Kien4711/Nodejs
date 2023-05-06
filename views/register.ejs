@@ -37,6 +37,13 @@
             <div class="form-block mx-auto ">
               <div class="text-center mb-3">
               <h3><strong>Create account</strong></h3>
+              <% if (errors && errors.length > 0) { %>
+                <div class="alert alert-danger">
+                  <% errors.forEach(error => { %>
+                    <p><%= error %></p>
+                  <% }); %>
+                </div>
+              <% } %>
               <!-- <p class="mb-4">Lorem ipsum dolor sit amet elit. Sapiente sit aut eos consectetur adipisicing.</p> -->
               </div class="">
               <form action="#" method="post" class="register">

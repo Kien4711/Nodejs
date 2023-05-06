@@ -33,5 +33,12 @@
         ResendCard.classList.add("d-flex");
         ResendCard.classList.remove("display-active");
     });   */
+    const btnResend = document.getElementById("btn-resend");
+
+    btnResend.addEventListener("click", () => {
+    // Kiểm tra OTP ở đây
+    // Nếu OTP đúng thì chuyển hướng đến trang đăng nhập
+    window.location.href = "/login";
+    });
 </script>
 </html>

@@ -49,19 +49,30 @@ const authToken = process.env.twilio_AUTH_TOKEN;
 const twilioNumber = process.env.twilio_Phone;
 const client = require("twilio")(accountSid, authToken);
 
-async function sendOTP(phoneNumber, otp) {
-  try {
-    const message = await client.messages.create({
-      body: `Your OTP is ${otp}`,
-      from: twilioNumber,
-      to: phoneNumber,
-    });
-    console.log(message.sid);
-    return message.sid;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to send OTP via SMS");
+function formatPhoneNumber(phoneNumber) {
+  const regex = /^0(\d{9})$/; // match 10 digits after '0'
+  const match = phoneNumber.match(regex);
+
+  if (match) {
+    return `+84${match[1]}`; // add country code and remove leading '0'
   }
+
+  throw new Error('Invalid phone number');
+}
+
+async function sendOTP(phoneNumber, otp) {
+try {
+  const message = await client.messages.create({
+    body: `Your OTP is ${otp}`,
+    from: twilioNumber,
+    to: formatPhoneNumber(phoneNumber)
+  });
+  console.log(message.sid);
+  return message.sid;
+} catch (error) {
+  console.error(error);
+  throw new Error('Failed to send OTP via SMS');
+}
 }
 
 const { v4: uuidv4 } = require("uuid");
@@ -79,7 +90,7 @@ async function getAllLabel(req) {
 function generateUserId() {
   return uuidv4();
 }
-//resful API
+//resful API////////////////////////////////////
 router.get("/", function (req, res) {
   const error = req.flash("error") || "";
 
@@ -148,8 +159,8 @@ router.post("/login", loginValidator, async (req, res) => {
 ///////////////////register/////////////////////////////////////////////////////////////
 
 router.get("/register", registerValidator, (req, res) => {
-  const error = req.flash("error") || "";
-  res.render("register", { error });
+  const errors = req.flash("error") || "";
+  res.render("register", { errors });
 });
 
 router.post("/register", registerValidator, async (req, res) => {
@@ -170,8 +181,7 @@ router.post("/register", registerValidator, async (req, res) => {
     return res.redirect("/register");
   }
 
-  const { username, email, phone, password, address, fullname, birthday } =
-    req.body;
+  const { username, email, phone, password, address, fullname, birthday } = req.body;
 
   try {
     const user = await User.findOne({ email: email });
@@ -182,6 +192,11 @@ router.post("/register", registerValidator, async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // Generate random OTP
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    // Encrypt OTP before sending
+    const encryptedOtp = await bcrypt.hash(otp.toString(), saltRounds);
     let userId = generateUserId();
     const newUser = new User({
       userId: userId,
@@ -192,11 +207,15 @@ router.post("/register", registerValidator, async (req, res) => {
       address: address,
       birthday: birthday,
       password: hashedPassword,
+      otp: encryptedOtp
     });
 
     await newUser.save();
-
-    return res.redirect("/login");
+    console.log(otp)
+    req.flash('success', `Your OTP is ${otp}. Please check your phone.`)
+    alert(`Your OTP is ${otp}. Please check your phone.`)
+    // return res.redirect("/login");
+    return res.redirect('/register/verify-otp')
   } catch (err) {
     console.error(err);
     return res.status(500).send("Server error");
@@ -207,50 +226,78 @@ router.get("/register/verify-otp", (req, res) => {
   res.render("OTP");
 });
 
-router.post("/register/verify-otp", (req, res) => {
-  res.render("OTP");
+router.post("/register/verify-otp", async(req, res) => {
+  try {
+    const { otp} = req.body;
+
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(400).json({ errors: [{ msg: 'Invalid OTP' }] });
+    }
+
+    // Verify OTP
+    const isMatch = await bcrypt.compare(otp.toString(), user.otp);
+    if (!isMatch) {
+      return res.status(400).json({ errors: [{ msg: 'Invalid OTP' }] });
+    }
+
+    // Encrypt password before saving to database
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Save user to database with encrypted password and verified OTP
+    user.otp = null;
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.redirect('/login');
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('Server error');
+  }
 });
 //////////////////////////////////////////////////////
-router.get("/change-password", (req, res) => {
-  res.render("change-password", { errors: null });
+router.get('/change-password', (req, res) => {
+  res.render('change-password', { error: null });
 });
-
-// Route to handle change password request
-router.post("/change-password", async (req, res) => {
+//////////////////chang password//////////////
+router.post('/change-password', async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
 
-  // Validate inputs
-  const errors = [];
+  try {
+    // Find the user
+    const user = await User.findOne(req.session.user)
 
-  if (!oldPassword || !newPassword || !confirmPassword) {
-    errors.push({ msg: "Please fill in all fields" });
+    // Check if the old password is correct
+    const isMatch = await bcrypt.compare(oldPassword, user.password)
+    if (!isMatch) {
+      throw new Error('Current password is incorrect' + user.email)
+    }
+
+    // Validate the new password
+    if (newPassword !== confirmPassword) {
+      throw new Error('Confirm password do not match')
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+    // Update the user's password in the database
+    await User.findOneAndUpdate({ email: user.email }, { password: hashedPassword })
+
+    // Delete the session and redirect to login page
+    req.session.destroy(err => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Server error')
+      } else {
+        res.redirect('/login');
+      }
+    });
+  } catch (error) {
+    res.render('change-password', { error: error });
   }
-
-  if (newPassword !== confirmPassword) {
-    errors.push({ msg: "New password and confirm password do not match" });
-  }
-
-  // Check if old password is correct
-  const user = await User.findById(req.user.id);
-  const isMatch = await bcrypt.compare(oldPassword, user.password);
-
-  if (!isMatch) {
-    errors.push({ msg: "Old password is incorrect" });
-  }
-
-  // If there are errors, render the form with errors
-  if (errors.length > 0) {
-    return res.render("change-password", { errors });
-  }
-
-  // Encrypt new password and save to database
-  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-  user.password = hashedPassword;
-  await user.save();
-
-  req.flash("success_msg", "Password changed successfully");
-  res.redirect("/home");
-});
+})
 
 /////////////////////////////////////////////////////////////////////
 router.get("/home", async (req, res) => {
@@ -279,7 +326,20 @@ router.post("/home", async (req, res) => {
     res.redirect("/login");
   }
 });
+/////////log out/////////////////////////////
+router.post("/logout", (req, res) => {
+  alert('Logout')
+  // Xóa thông tin phiên đăng nhập
+  req.session.destroy((err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Server error");
+    }
 
+    // Trả về mã thành công
+    return res.status(200).json({ code: 0, message: "Logout successful" });
+  });
+});
 ////////////////////////////Sent//////////////////////////////////////////
 
 router.post("/send-email", async (req, res) => {
@@ -317,107 +377,67 @@ router.post("/home/draft", (req, res) => {
   res.render("home");
 });
 ////////////profile/////////////////////
-router.get("/profile/:id", async (req, res) => {
+router.get('/profile', async (req, res) => {
   try {
-    const user = await User.findOne({ userId: req.params.id });
-    if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+    // Check if user is logged in
+    if (!req.session.user) {
+      return res.redirect('/login')
     }
-    res.render("profile", { user });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
-  }
-});
 
+    // Find the user
+    const user = await User.findOne(req.session.user)
+    console.log(user)
+    // Render the profile view and pass in the user object
+    res.render('profile', { user: user })
+  } catch (error) {
+    console.error(error)
+    res.status(500).send('Server error')
+  }
+})
+
+/////////////////////////////change-avatar//////////////////
 // Thiết lập storage cho Multer
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "public/uploads/");
+    cb(null, '../public/uploads');
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-// Thiết lập upload cho Multer
-const upload = multer({ storage: storage });
-
-// Route để render form upload avatar
-router.get("/profile/:id/update-avatar", async (req, res) => {
-  const user = await User.findById(req.params.id);
-  res.render("update-avatar", { user: user });
-});
-
-router.post("/search", async (req, res) => {
-  if (req.session.isLoggedIn) {
-    console.log("demo");
-    const { keyword } = req.body;
-
-    const emailsToUser = await Email.find({
-      $and: [
-        { from: req.session.user.email },
-        {
-          $or: [
-            { subject: { $regex: keyword, $options: "i" } },
-            { text: { $regex: keyword, $options: "i" } },
-            { to: { $elemMatch: { $regex: keyword, $options: "i" } } },
-          ],
-        },
-      ],
-    });
-
-    console.log(emailsToUser);
-    const getLabels = await getAllLabel(req)
-    res.render("home", { emailsToUser, getLabels });
-
-
-  } else {
-    res.redirect("");
+    cb(null, "avatar-" + Date.now());
   }
 });
 
-// Route để xử lý request upload avatar
-router.post("/update-avatar", upload.single("avatar"), async (req, res) => {
-  const user = await User.findById(req.user.id);
-  user.avatar = "/uploads/" + req.file.filename; // Lưu đường dẫn của file ảnh vào trường 'avatar'
-  await user.save();
-  res.redirect("/profile/" + req.user.id); // Chuyển hướng người dùng về trang profile của họ
-});
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5 // giới hạn kích thước tệp 5MB
+  },
+  fileFilter: function (req, file, cb) {
+    // kiểm tra định dạng tệp
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new Error("Only image files are allowed!"));
+    }
+    cb(null, true);
+  }
+}).single("avatar");
 
-//////////////////chang password//////////////
-router.post("/change-password", (req, res) => {
-  const { currentPassword, newPassword, confirmPassword } = req.body;
-  const userId = req.session.userId;
-
-  // TODO: validate input
-
-  // check if current password is correct
-  User.findById(userId)
-    .then((user) => {
-      return bcrypt.compare(currentPassword, user.password);
-    })
-    .then((isMatch) => {
-      if (!isMatch) {
-        throw new Error("Current password is incorrect");
+router.post("/update-avatar", (req, res) => {
+  upload(req, res, (err) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).send(err.message);
+    }
+    const user = req.session.user;
+    user.avatar = req.file.filename;
+    User.findOneAndUpdate({ email: user.email }, { avatar: user.avatar }, (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send("Internal Server Error");
       }
-
-      // hash new password
-      return bcrypt.hash(newPassword, 10);
-    })
-    .then((hashedPassword) => {
-      // update user password in db
-      return User.findByIdAndUpdate(userId, { password: hashedPassword });
-    })
-    .then(() => {
-      // redirect to profile page
       res.redirect("/profile");
     })
-    .catch((error) => {
-      res.render("change-password", { error });
-    });
-});
-///////////////////edit-profile////////
+  })
+})
 
 router.get("/get-send-email", async (req, res) => {
   if (req.session.isLoggedIn) {
@@ -442,39 +462,51 @@ router.get("/get-email", async (req, res) => {
   }
 });
 
+///////////////////edit-profile////////
 // Handle POST request to /edit-profile
-router.post("/edit-profile", (req, res) => {
-  // Get the current user from the session
-  const user = req.session.user;
+router.post("/edit-profile", async (req, res) => {
+  try {
+    // Get the current user from the session
+    const user = req.session.user;
 
-  // Get the new values for fullname, phone, address and birthday from the request body
-  const { fullname, phone, address, birthday } = req.body;
+    // Get the new values for fullname, phone, address and birthday from the request body
+      const { fullname, phone, address, birthday } = req.body;
 
-  // Update the user in the database with the new values
-  User.findByIdAndUpdate(
-    user.userId,
-    {
-      fullname: fullname,
-      phone: phone,
-      address: address,
-      birthday: birthday,
-    },
-    { new: true },
-    (err, updatedUser) => {
-      if (err) {
-        console.log(err);
-        res.status(500).send("Internal Server Error");
-      } else {
-        // Update the user in the session
-        req.session.user = updatedUser;
-        res.redirect("/profile");
+      // Create an object to store the new values for the user
+      const newValues = {};
+
+      if (fullname) {
+        newValues.fullname = fullname;
       }
+      if (phone) {
+        newValues.phone = phone;
+      }
+      if (address) {
+        newValues.address = address;
+      }
+      if (birthday) {
+        newValues.birthday = birthday;
+      }
+
+      // Update the user in the database with the new values
+      const updatedUser = await User.findOneAndUpdate(
+        { email: user.email },
+        newValues,
+        { new: true }
+      );
+
+    if (!updatedUser) {
+      return res.status(404).send("User not found");
     }
-  );
-});
 
-
-
+    // Update the user in the session
+    req.session.user = updatedUser;
+    res.redirect("/profile");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal Server Error");
+  }
+})
 
 // Render the edit profile page
 router.get("/edit-profile", (req, res) => {
@@ -484,7 +516,6 @@ router.get("/edit-profile", (req, res) => {
   // Render the edit profile page with the user object
   res.render("edit-profile", { user: user });
 });
-
 /////////////////////// Label
 router.post("/labels", async (req, res) => {
   const { name } = req.body;
@@ -749,5 +780,5 @@ router.post('/email/reply/:id', async (req, res) => {
   res.render('detailMail', { emails, userName, getLabels });
 });
 
-module.exports = router;
+module.exports = router
 //test branch
