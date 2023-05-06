@@ -158,6 +158,25 @@
                     <div><button type="button"
                             class="fa fa-share btnDetailMail-forward-main"><span>Forward</span></button></div>
                 </div>
+                <div>
+                    <form action="/send-email" method="post" id="reply-mail-box" class="display-mail-box">
+                        <button type="" class="btn-close-reply-mail-box"><i class="fa fa-times"></i></button>
+                        <div class="reply-mail-box-container">
+                            <div class="reply-mail-box">
+                                <div class="r1">
+                                    <button class="reply-or-forward-menu"><span class="fa fa-reply"></span><span class="fa fa-sort-desc"></span></button>
+                                    <span>To <input type="text" id="email" name="email" placeholder="" required></span>
+                                </div> 
+                                <textarea id="message" name="message" placeholder="Write something.." required></textarea>
+                                <div class="container-btn-reply-email">
+                                    <input type="submit" value="Send">
+                                    <input type="file" id="fileInput-reply">
+                                    <button class="btn-select-file-reply fa fa-file" onclick="document.getElementById('fileInput-reply').click();"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
         </div>
 
 
@@ -198,22 +217,7 @@
         </div>
     </form>
 
-    <form action="/send-email" method="post" id="reply-mail-box" class="display-mail-box">
-        <div class="reply-mail-box-container">
-            <div class="reply-mail-box">
-                <div class="r1">
-                    <button class="reply-or-forward-menu"><span class="fa fa-reply"></span><span class="fa fa-sort-desc"></span></button>
-                    <span>To <input type="text" id="email" name="email" placeholder="" required></span>
-                </div> 
-                <textarea id="message" name="message" placeholder="Write something.." required></textarea>
-                <div class="container-btn-reply-email">
-                    <input type="submit" value="Send">
-                    <input type="file" id="fileInput-reply">
-                    <button class="btn-select-file-reply fa fa-file" onclick="document.getElementById('fileInput-reply').click();"></button>
-                </div>
-            </div>
-        </div>
-    </form>
+    
 <!-- 
     <form action="/send-email" method="post" class="forward-mail-box">
         <button type="" class="btn-close-mail-box"><i class="fa fa-times"></i></button>

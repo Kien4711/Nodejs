@@ -1483,9 +1483,9 @@ main.sended-container {
 /* ----------------------------------------------Form reply mail ------------------------ */
 
 form#reply-mail-box {
-  bottom: -200px;
-  left: 545px;
-  position: relative;
+  top: 281px;
+  left: 0;
+  position: absolute;
   width: 900px;
   margin: 0;
   background-color: #fff;
@@ -1595,4 +1595,22 @@ form#reply-mail-box {
   width: 500px;
   background-color: white;
   box-shadow: none;
+}
+
+.btn-close-reply-mail-box {
+  width: 17px;
+  position: relative;
+  top: 0;
+  right: -777px;
+  background-color: white;
+  border: none;
+}
+
+.btn-close-reply-mail-box .fa {
+  color: #000;
+  position: absolute;
+  top: 4px;
+  right: 30px;
+  width: fit-content;
+  font-size: 15px;
 }
