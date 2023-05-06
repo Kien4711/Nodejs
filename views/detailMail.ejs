@@ -177,6 +177,25 @@
                         </div>
                     </form>
                 </div>
+                <div>
+                    <form action="/send-email" method="post" id="forward-mail-box" class="display-mail-box">
+                        <button type="" class="btn-close-forward-mail-box"><i class="fa fa-times"></i></button>
+                        <div class="forward-mail-box-container">
+                            <div class="forward-mail-box">
+                                <div class="r1">
+                                    <button class="forward-or-forward-menu"><span class="fa fa-forward"></span><span class="fa fa-sort-desc"></span></button>
+                                    <span>Forward to <input type="text" id="email" name="email" placeholder="" required></span>
+                                </div> 
+                                <textarea id="message" name="message" placeholder="Write something.." required></textarea>
+                                <div class="container-btn-forward-email">
+                                    <input type="submit" value="Send">
+                                    <input type="file" id="fileInput-forward">
+                                    <button class="btn-select-file-forward fa fa-file" onclick="document.getElementById('fileInput-forward').click();"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
         </div>
 
 
