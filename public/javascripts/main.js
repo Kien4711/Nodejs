@@ -13,13 +13,22 @@
     const mailTime = document.querySelector('.date-email')
     const linkToProfile = document.getElementById("profile-link")
     const btnDetailMail = document.querySelector('.btnDetailMail-star')
-
+    const btnReplyMail = document.querySelector('.btnDetailMail-reply-main')
+    const replyMailBox = document.getElementById('reply-mail-box')
     btnWriteMail.addEventListener('click', () => {
         mailBox.classList.remove("display-mail-box");
     })
 
     btnCloseMailBox.addEventListener('click', () => {
         mailBox.classList.add("display-mail-box");
+    })
+
+    btnReplyMail.addEventListener('click', () => {
+      replyMailBox.classList.remove("display-mail-box");
+    })
+
+    btnReplyMail.addEventListener('click', () => {
+      replyMailBox.classList.add("display-mail-box");
     })
 
     let isMenuOpen = false;
@@ -51,11 +60,11 @@
         const formData = new FormData();
         formData.append('file', file);
     })
-    // Lắng nghe sự kiện click vào link Profile
-    linkToProfile.addEventListener("click", function(event) {
-        event.preventDefault(); // Ngăn chặn chuyển hướng đến trang khác khi click vào link
-        window.location.href = "/profile"; // Chuyển hướng đến trang profile của người dùng đang đăng nhập
-    });
+    // // Lắng nghe sự kiện click vào link Profile
+    // linkToProfile.addEventListener("click", function(event) {
+    //     event.preventDefault(); // Ngăn chặn chuyển hướng đến trang khác khi click vào link
+    //     window.location.href = "/profile"; // Chuyển hướng đến trang profile của người dùng đang đăng nhập
+    // });
 
 
 let isStar = false;

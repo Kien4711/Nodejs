@@ -226,7 +226,7 @@ router.post("/register/verify-otp", (req, res) => {
 });
 //////////////////////////////////////////////////////
 router.get("/change-password", (req, res) => {
-  res.render("change-password", { errors: null });
+  res.render("change-password", { error: null });
 });
 
 // Route to handle change password request
