@@ -10,7 +10,7 @@
     <script src="https://kit.fontawesome.com/e7cea346e1.js" crossorigin="anonymous"></script>
     <!-- <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link type="text/css" rel="stylesheet" href="stylesheets/style.css">
+    <link type="text/css" rel="stylesheet" href="/stylesheets/style.css">
     <title>Home</title>
 </head>
 
@@ -119,7 +119,7 @@
             </div>
             <div class="mail-detail-main">
                 <div class="main-detail-sub-header">
-                    <img src="../images/meiko.png" alt="">
+                    <img src="/images/meiko.png" alt="">
                     <div class="inf-of-send-mail">
                         <span>
                             <span class="username">Dương Gia Long</span>
@@ -163,7 +163,7 @@
     <div class="user-menu display-menu-user">
         <table>
             <tbody>
-                <tr class="profile">
+                <tr class="profile-menu">
                     <td> <a href=""><i class="fa fa-user"></i> Profile</a></td>
                 </tr>
                 <tr class="setting">
@@ -193,6 +193,34 @@
         </div>
     </form>
 
+    <!-- <form action="/send-email" method="post" id="reply-mail-box">
+        <div class="reply-mail-box-container">
+            <img src="/images/meiko.png" alt="">
+            <div class="reply-mail-box">
+                <div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form action="/send-email" method="post" class="forward-mail-box">
+        <button type="" class="btn-close-mail-box"><i class="fa fa-times"></i></button>
+        <h4>New Message</h4>
+        <input type="text" id="email" name="email" placeholder="Send to:" required>
+
+        <input type="text" id="subject" name="subject" placeholder="Subject.." required>
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" placeholder="Write something.." required></textarea>
+
+        <div class="container-btn-send-message">
+            <input type="submit" value="Send">
+            <input type="file" id="fileInput">
+            <button class="btn-select-file fa fa-file" onclick="document.getElementById('fileInput').click();"></button>
+        </div>
+    </form> -->
+
     <div class="container-label-box overlay label-active">
         <div class="new-label-box">
 
@@ -211,7 +239,7 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="/javascripts/detailMail.js"></script>
+<script type="text/javascript" src="/javascripts/main.js"></script>
 
 
 </html>

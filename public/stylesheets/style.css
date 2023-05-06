@@ -418,6 +418,7 @@ header {
   margin-left: 35px;
   min-width: calc(100% - 600px);
   background-color: white;
+  width: 500px;
 }
 
 
@@ -438,6 +439,8 @@ header {
 
 .search-wrapper input {
   height: 100%;
+  position: relative;
+  left: -32px;
   padding: .5rem;
   border: none;
   outline: none;
@@ -560,6 +563,7 @@ a.email-content {
 
 .date-email {
   padding-left: 20px;
+  width: 300px;
 }
 
 .sub-header {
@@ -628,11 +632,11 @@ a.email-content {
 /* Send Mail Box */
 
 form.send-email-box {
-  bottom: 0;
-  right: 30px;
+  bottom: 6px;
+  left: 950px;
   position: fixed;
   width: 600px;
-  margin: 0 auto;
+  margin: 0;
   background-color: #fff;
   padding: 10px 20px 20px 20px;
   border-radius: 5px;
@@ -719,7 +723,7 @@ input[type="text"]:focus-visible, textarea:focus-visible {
   left: 138px;
   width: 15px;
   padding: 10px 20px;
-  bottom: -40px;
+  top: 6px;
   background-color: #fff;
   border: none;
 }
@@ -736,9 +740,9 @@ input[type="text"]:focus-visible, textarea:focus-visible {
 button.btn-close-mail-box {
   height: 30px;
   width: 30px;
-  position: fixed;
+  position: absolute;
   right: 30px;
-  top: 220px;
+  top: 13px;
   border: none;
   background-color: #fff;
 }
@@ -933,6 +937,9 @@ i.fa.fa-times {
   box-shadow: 20px 20px 10px grey;
 }
 
+.profile-menu{
+  
+}
 .sidebar-profile {
   width: 40%;
   display: flex;
@@ -1262,4 +1269,211 @@ i.fa.fa-times {
 
 .email-zoom-out button.fa-star {
   margin: 0 15px;
+}
+
+.home-main .option-email {
+  display: flex;
+  position: absolute;
+  right: 20px;
+  background-color: #d9f2f6;
+}
+
+.home-main .option-email button {
+  background-color: #d9f2f6;
+}
+
+.home-main .option-email button:hover {
+  background-color: #98eef9;
+}
+
+.email-zoom-out a {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  width: 100%
+}
+
+/* --------------------------------------EDIT PROFILE --------------------------------------------- */
+ 
+.btn-update-avatar {
+  background: #FF4B2B;
+  color: white;
+  width: 150px;
+  height: 35px;
+  font-size: 14px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 600;
+  border: none;
+  position: relative;
+  top: 32px;
+  padding: 0;
+  left: 25px;
+}
+
+.btn-update-avatar:hover {
+  background-color: #f72500;
+}
+
+.main-profile ul {
+  padding: 0;
+}
+
+.main-profile ul li{
+  border: 1.5px outset rgb(195, 192, 192);
+  border-radius: 8px;
+  height: 35px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 500px;
+  margin-top: 2px;
+}
+
+.main-profile ul li span {
+  padding-left: 15px;
+  font-weight: 500;
+}
+
+.hx {
+  padding-bottom: 5px;
+  margin-left: 7px;
+  font-size: 15px;
+}
+
+.btn-edit-profile {
+  padding: 10px 15px;
+  border-radius: 15px;
+  margin-top: 10px;
+}
+
+.btn-edit-profile:hover {
+  background-color: #f72500;
+}
+
+.btn-edit-profile a {
+  text-decoration: none;
+  color: white;
+}
+
+.btn-edit-profile a:hover {
+  color: white;
+}
+
+/* ----------------------------------------------- SENDED --------------------------------------------- */
+
+.email-receiver {
+  width: 250px;
+}
+
+.sended-container .date-email {
+  width: 250px;
+}
+
+.sended-container .option-email {
+
+}
+
+.sended-container .option-email {
+  display: flex;
+  position: absolute;
+  right: 20px;
+  background-color: #d9f2f6;
+}
+
+.sended-container .option-email button {
+  background-color: #d9f2f6;
+  margin: 0px 9px;
+  padding: 12px;
+}
+
+.sended-container .option-email button:hover {
+  background-color: #98eef9;
+  margin: 0px 9px;
+  padding: 12px;
+}
+
+.sended-container .email-zoom-out {
+  height: 75px;
+}
+
+.bg-star {
+  background-color: #D9F2F6;
+}
+
+main.sended-container {
+  position: relative;
+}
+
+.sended-container .directional {
+  position: absolute;
+  right: 40px;
+  top: 15px;
+}
+
+/* ------------------------------------------------Draft ----------------------------------------------- */
+
+.email-draft {
+  color: red;
+  width: 150px;
+}
+
+.draft-container {
+  position: relative;
+}
+
+.draft-container .email-content {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.draft-container .option-email {
+  display: flex;
+  position: absolute;
+  right: 20px;
+  background-color: #d9f2f6;
+}
+
+.draft-container .email-subject {
+  width: 530px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 30px;
+}
+
+.draft-container .option-email {
+  display: flex;
+  position: absolute;
+  right: 20px;
+  background-color: #d9f2f6;
+}
+
+.draft-container .option-email button {
+  background-color: #d9f2f6;
+  margin: 0px 9px;
+  padding: 12px;
+}
+
+.draft-container .option-email button:hover {
+  background-color: #98eef9;
+  margin: 0px 9px;
+  padding: 12px;
+}
+
+.draft-container .email-zoom-out {
+  height: 75px;
+}
+
+.draft-container .directional {
+  position: absolute;
+  right: 40px;
+  top: 15px;
 }

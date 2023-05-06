@@ -1,22 +1,55 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
     <title><%= user.username %> Profile</title>
-  </head>
-  <body>
-    <h1><%= user.username %> Profile</h1>
-    <ul>
-      <li>Full Name: <%= user.fullname %></li>
-      <li>Email: <%= user.email %></li>
-      <li>Phone: <%= user.phone %></li>
-      <li>Address: <%= user.address %></li>
-      <li>Birthday: <%= user.birthday.toDateString() %></li>
-    </ul>
-    <form action="/update-avatar" method="post" enctype="multipart/form-data">
-      <input type="file" name="avatar">
-      <button type="submit">Update Avatar</button>
-    </form>
-    <a href="/edit-profile">Edit Profile</a>
-    <a href="/change-password">Change Password</a>
-  </body>
+</head>
+<body>
+    <div class="d-flex justify-content-center align-items-center h-100">
+        <div class="profile">
+            <div class="sidebar-profile">
+                <h3>Profile</h3>
+                <span>Here you can manage your account</span>
+                <a href="#" class="profile-focus">Account settings</a>
+                <a href="./changpassword.html" class="">Password</a>
+            </div>
+            
+            <div class="main-profile">
+                <form action="/update-avatar" method="post" enctype="multipart/form-data">
+                    <div class="manage-avatar">
+                        <img src="/images/meiko.png" alt="">
+                        <input type="file" name="avatar" id="image-input">
+                        <button type="submit" class="btn-update-avatar" onclick="document.getElementById('image-input').click();">Update Avatar</button>
+                    </div>
+                </form>
+                <ul>
+                    <!-- <%= user.fullname %> -->
+                    <span class="hx">Full Name:</span>
+                    <li><span> <%= user.fullname %></span> </li>
+                    <!-- <%= user.email %> -->
+                    <span class="hx">Email:</span>
+                    <li><span> <%= user.email %></span> </li>
+                    <!-- <%= user.phone %> -->
+                    <span class="hx">Phone:</span>
+                    <li><span> <%= user.phone %></span> </li>
+                    <!-- <%= user.address %> -->
+                    <span class="hx">Address:</span>
+                    <li><span> <%= user.address %></span> </li>
+                    <!-- <%= user.birthday.toDateString() %> -->
+                    <span class="hx">Birthday:</span>
+                    <li><span> <%= user.birthday.toDateString() %></span> </li>
+                </ul>
+                <button class="btn-edit-profile"><a href="/edit-profile">Edit Profile</a></button>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+</script>
 </html>

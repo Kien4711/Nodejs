@@ -315,9 +315,32 @@ router.get("/sended", async (req, res) => {
     res.redirect("/login");
   }
 });
+//////////////////////////////////////Star/////////////////////////////////
+
+router.get("/starred", async (req, res) => {
+  if (req.session.isLoggedIn) {
+    const emailsToUser = await Email.find({ from: req.session.user.email });
+
+    res.render("starred", { emailsToUser });
+  } else {
+    res.redirect("/login");
+  }
+});
+////////////////////////////Trash//////////////////////////////////////////
+
+router.get("/trash", async (req, res) => {
+  if (req.session.isLoggedIn) {
+    const emailsToUser = await Email.find({ from: req.session.user.email });
+
+    res.render("trash", { emailsToUser });
+  } else {
+    res.redirect("/login");
+  }
+});
+
 ////////////////////////////Draft//////////////////////////////////////////
-router.get("/home/draft", (req, res) => {
-  res.render("home");
+router.get("/draft", (req, res) => {
+  res.render("draft");
 });
 router.post("/home/draft", (req, res) => {
   res.render("home");

@@ -17,7 +17,6 @@
                 <h3>Edit Profile</h3>
                 <span>Here you can manage your account</span>
                 <a href="#" class="profile-focus">Account settings</a>
-                <a href="./changpassword.html" class="">Password</a>
             </div>
             
             <div class="main-profile">
@@ -30,16 +29,16 @@
                     </div>
                     <label for="fullname">Full Name:</label>
                     <!-- <%= user.fullname %> -->
-                    <input type="text" name="fullname" value=""><br>
+                    <input type="text" name="fullname" value="<%= user.fullname %>"><br>
                     <label for="phone">Phone:</label>
                     <!-- <%= user.phone %> -->
-                    <input type="text" name="phone" value=""><br>
+                    <input type="text" name="phone" value="<%= user.phone %>"><br>
                     <label for="address">Address:</label>
                     <!-- <%= user.address %> -->
-                    <input type="text" name="address" value=""><br>
+                    <input type="text" name="address" value="<%= user.address %>"><br>
                     <label for="birthday">Birthday:</label>
                     <!-- <%= user.birthday.toISOString().slice(0, 10) %> -->
-                    <input type="date" name="birthday" value=""><br>
+                    <input type="date" name="birthday" value="<%= user.birthday.toISOString().slice(0, 10) %>"><br>
                     <button class="btn-save-edit-profile" type="submit">Save Changes</button>
                 </form>
             </div>

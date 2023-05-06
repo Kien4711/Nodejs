@@ -7,7 +7,10 @@
     const labelBox = document.querySelector('.container-label-box')
     const btnCloseLabelBox = document.querySelector('.btn-close-label-box')
     const btnCancelLabelBox = document.querySelector('.btn-cancel-label')
-    const btnDetailMail = document.querySelector('.btnDetailMail-star')
+    const btnDetailMails = document.querySelectorAll('.btnDetailMail-star');
+    const mailCards = document.querySelectorAll('.email-zoom-out');
+    const optionMail = document.querySelector('.option-email')
+    const mailTime = document.querySelector('.date-email')
 
     btnWriteMail.addEventListener('click', () => {
         mailBox.classList.remove("display-mail-box");
@@ -49,15 +52,35 @@
 
 
 let isStar = false;
-btnDetailMail.addEventListener('click', () => {
-    if(isStar) {
+btnDetailMails.forEach(btnDetailMail => {
+    btnDetailMail.addEventListener('click', () => {
+      if (isStar) {
         btnDetailMail.classList.remove('fa-star-o');
-        btnDetailMail.classList.add('fa-star')
+        btnDetailMail.classList.add('fa-star');
         isStar = false;
-    }
-    else {
+      } else {
         btnDetailMail.classList.remove('fa-star');
-        btnDetailMail.classList.add('fa-star-o')
+        btnDetailMail.classList.add('fa-star-o');
         isStar = true;
-    }
+      }
+    });
+  });
+
+mailCards.forEach(mailCard => {
+    
 })
+
+mailCards.forEach(mailCard => {
+    const optionMail = mailCard.querySelector('.option-email');
+    const mailTime = mailCard.querySelector('.date-email');
+  
+    mailCard.addEventListener('mouseover', () => {
+      mailTime.classList.add('display-active');
+      optionMail.classList.remove('display-active');
+    });
+  
+    mailCard.addEventListener('mouseleave', () => {
+      mailTime.classList.remove('display-active');
+      optionMail.classList.add('display-active');
+    });
+  });

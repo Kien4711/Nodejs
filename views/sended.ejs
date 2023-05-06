@@ -22,54 +22,84 @@
         <div class="sidebar-menu">
             <ul>
                 <li>
-                    <a href="home" >
+                    <a href="home" class="">
                         <span class="fa fa-inbox"></span>
                         <span>Inbox</span>
                     </a>
                 </li>
                 <li>
-                    <a href="sended" class="active">
+                    <a href="sended"  class="active">
                         <span class="fa fa-paper-plane"></span>
                         <span>Sent</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="starred" class="">
+                        <span class="fa fa-star-o"></span>
+                        <span>Starred</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="trash" class="">
                         <span class="fa fa-trash-o"></span>
+                        <span>Trash</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="">
+                        <span class="fa fa-file"></span>
                         <span>Drafts</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="label-sidebar">
+                    <a href="#" class="label-sidebar" class="">
                         <span>Label</span>
                         <button class="fa fa-plus add-draft btn-label">
                         </button>
                     </a>
                 </li>
+                <li>
+
+                  </li>
+                  <script>
+                    function toggleOptions(button) {
+                      const options = button.parentNode.querySelector(".more-options");
+                      options.classList.toggle("show");
+                    }
+                  </script>
+                  
+                  <style>
+                    .more-options {
+                      display: none;
+                    }
+                    .more-options.show {
+                      display: block;
+                    }
+                  </style>
             </ul>
         </div>
     </div>
 
     <div class="main-content">
         <header>
-            <button type="" class="btn-write-Email">
+            <button type="button" class="btn-write-Email">
                 <label for="">
                     <span class="fa fa-pencil-square-o"></span>
                 </label>
                 Compose
             </button>
 
-            <div class="search-wrapper">
-                <span class="fa fa-search"></span>
-                <input type="search" placeholder="Search here" name="search" id="search-input">
-            </div>
-            
+            <form action="/search" method="POST">
+                <div class="search-wrapper">
+                    <span ><button type="submit" class="fa fa-search btn-search"></button></span>
+                  <input type="search" placeholder="Search here" name="keyword" id="search-input">
+                </div>
+            </form>
             <div class="email-list">
                 <ul id="email-list-ul">
                     <!-- email list items will be added here dynamically using JavaScript -->
                 </ul>
             </div>
-            
 
             <button class="user-wrapper" id="user-wrapper">
                 <img src="/images/meiko.png" alt="">
@@ -83,7 +113,7 @@
 
 
 
-    <main>
+    <main class="sended-container">
         <div class="sub-header">
             <span class="directional">
                 <span>
@@ -103,11 +133,17 @@
         <% emailsToUser.forEach((email) => { %>
             <div class="email-zoom-out">
                 <input type="checkbox" name="selected-email" id="checkbox-Selected-Email">
+                <span><button type="button" class="fa fa-star-o btnDetailMail-star"></button></span>
                 <a href="#" class="email-content">
-                    <span>To <%= email.to %></span>
+                    <span class="email-receiver">To <%= email.to %></span>
                     <span class="email-sub-content"><%= email.text %></span>
                     <span class="date-email"><%= email.sentAt %></span>
                 </a>
+                <div class="option-email display-active">
+                    <span><button type="button" class="fa fa-exclamation-circle btnDeatilMail-spam"></button></span>
+                    <span><button type="button" class="fa fa-trash-o btnDeatilMail-delete"></button></span>
+                    <span><button type="button" class="fa fa-ban btnDeatilMail-delete"></button></span>
+                </div>
             </div>
           <% }); %>
         
@@ -117,7 +153,7 @@
     <div class="user-menu display-menu-user">
         <table>
             <tbody>
-                <tr class="profile">
+                <tr class="profile-menu">
                     <td> <a href=""><i class="fa fa-user"></i> Profile</a></td>
                 </tr>
                 <tr class="setting">
