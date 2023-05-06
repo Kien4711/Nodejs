@@ -155,6 +155,11 @@ h2 {
   background-color: #7e0cf5;
   opacity: .2; }
 
+.error-login {
+  width: 100%;
+  padding: 12px 15px;
+}
+
 .btn-login {
   width: 100%;
   background: #FB771A;
@@ -174,6 +179,7 @@ h2 {
 
 .login .form-block {
   padding: 30px 20px;
+  border-radius: 17px;
 }
 
 .register .form-group {
@@ -459,6 +465,20 @@ header {
   border: 1px solid rgb(236, 234, 234);
 }
 
+.empty-btn {
+  height: 15px;
+}
+
+.more-options{
+  background-color: #eae9e9;
+  padding: 15px 16px 15px 4px;
+  border-radius: 5px;
+}
+
+.edit-btn td a{
+
+}
+
 .user-wrapper h4 {
   margin-bottom: 0px;
 }
@@ -677,9 +697,23 @@ input[type="text"]:focus-visible, textarea:focus-visible {
   outline: none;
 }
 
+.more-btn {
+  color: black;
+  background-color: #A7C8F7 !important;
+}
+
+.labels-update:hover {
+  background-color: #A7C8F7 !important;
+}
+
+.more-btn:hover {
+  background-color: #A7C8F7 !important;
+}
+
 .send-email-box textarea {
   height: 230px;
   resize: none;
+  width: auto;
 }
 
 .btn-label {
@@ -1127,8 +1161,10 @@ i.fa.fa-times {
 
 .mail-detail-container {
   position: relative;
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
+  position: relative;
+  height: 100%;
 }
 
 .mail-detail-header .btn-label-of-mail {
@@ -1148,8 +1184,8 @@ i.fa.fa-times {
 }
 
 .main-content-mail-detail {
-  display: flex;
-  flex-direction: column;
+  /* display: flex;
+  flex-direction: column; */
 }
 
 .main-detail-sub-header img {
@@ -1165,6 +1201,9 @@ i.fa.fa-times {
 }
 
 .mail-detail-main {
+  /* display: flex;
+  flex-direction: row;
+  justify-content: flex-start; */
   position: absolute;
   top: 78px;
 }
@@ -1758,4 +1797,67 @@ form#forward-mail-box {
 
 .display-reply-box{
   display: none;
+}
+
+
+/* -------------------------search advance ---------------------------------- */
+
+.fa-tasks {
+  background-color: white;
+  border: none;
+  padding: 13px;
+  position: relative;
+  left: -6px;
+  color: black;
+}
+
+.fa-tasks:hover {
+  background-color: rgb(198, 198, 198);
+}
+
+.search-advance {
+  position: fixed;
+  top: 82px;
+  left: 555px;
+  z-index: 200;
+  background-color: white;
+  width: 700px;
+  box-shadow: 5px 6px 9px 3px #a2a2a2;
+  border-radius: 10px;
+  /* display: flex;
+  flex-direction: column;
+  align-items: flex-start; */
+  padding: 25px;
+}
+
+.display-flex-search-advance {
+  display: flex;
+  align-items: center;
+}
+
+.search-advance span {
+  width: 120px;
+  justify-content: flex-start;
+}
+
+.search-advance input[type="text"] {
+  width: 100%;
+  background-color: #fff;
+  border-bottom: 1px solid rgb(194, 193, 193);
+  padding: 8px 15px;
+  margin: 12px 0;
+}
+
+.search-advance select {
+  width: 100%;
+  height: 35px;
+  margin-top: 15px;
+}
+
+.btn-search-advance-box {
+      float: right;
+      margin-top: 24px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      text-transform: capitalize;
 }

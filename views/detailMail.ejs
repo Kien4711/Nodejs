@@ -123,8 +123,9 @@
                     <span><button type="submit" class="fa fa-search btn-search"></button></span>
                     <input type="search" placeholder="Search here" name="keyword" id="search-input">
                 </div>
+                <button type="button" class="fa fa-tasks"></button>
             </form>
-            <button class="user-wrapper" id="user-wrapper">
+            <button class="user-wrapper">
                 <img src="/images/meiko.png" alt="">
                 <div>
                     <h4>Meiko</h4>
@@ -188,11 +189,7 @@
         </div>
         <div class="mail-detail-container">
             <div class="mail-detail-header">
-                <h3>
-                    <%= emails[0].subject %>
-                </h3>
-
-                <div><button class="btn-label-of-mail">inbox</button></div>
+                <h3><%= emails[0].subject %></h3>
             </div>
             <% emails.forEach((email)=> { %>
                 <div class="mail-detail-main">
@@ -201,11 +198,11 @@
                         <div class="inf-of-send-mail">
                             <span>
                                 <span class="username">
-                                    <%=userName.fullname%>
+                                    <%= userName.fullname %>
                                 </span>
-                                <span>"<"<%=email.from%>">"</span>
+                                <span>"<"<%= email.from %>">"</span>
                             </span>
-                            <span class="infor-mail-sender">to bcc: <%=email.to%></span>
+                            <span class="infor-mail-sender">to bcc: <%= email.to%></span>
                         </div>
                         <div class="time-to-send-mail">
                             <%=email.sentAt%>
@@ -221,17 +218,17 @@
                             <%=email.text%>
                         </div>
                         <div class="line"></div>
-
+                        <div class="container-btn-send-and-forward">
+                            <div><button type="button" class="fa fa-reply btnDetailMail-reply-main"><span>Reply</span></button>
+                            </div>
+                            <div><button type="button"
+                                    class="fa fa-share z-forward-main btnDetailMail-forward-main"><span>Forward</span></button>
+                            </div>
+                        </div>
                     </div>
                     <% }); %>
                 </div>
-                <div class="container-btn-send-and-forward">
-                    <div><button type="button" class="fa fa-reply btnDetailMail-reply-main"><span>Reply</span></button>
-                    </div>
-                    <div><button type="button"
-                            class="fa fa-share z-forward-main btnDetailMail-forward-main"><span>Forward</span></button>
-                    </div>
-                </div>
+                
                 <div>
                     <form action="/email/reply/<%= emails[0]._id %>" method="post" id="reply-mail-box"
                         class="display-mail-box">
@@ -319,24 +316,6 @@
         </div>
     </form>
 
-
-    <!-- 
-    <form action="/send-email" method="post" class="forward-mail-box">
-        <button type="" class="btn-close-mail-box"><i class="fa fa-times"></i></button>
-        <h4>New Message</h4>
-        <input type="text" id="email" name="email" placeholder="Send to:" required>
-
-        <input type="text" id="subject" name="subject" placeholder="Subject.." required>
-
-        <label for="message">Message:</label>
-        <textarea id="message" name="message" placeholder="Write something.." required></textarea>
-
-        <div class="container-btn-send-message">
-            <input type="submit" value="Send">
-            <input type="file" id="fileInput">
-            <button class="btn-select-file fa fa-file" onclick="document.getElementById('fileInput').click();"></button>
-        </div>
-    </form> -->
     <form action="/labels" method="post">
     <div class="container-label-box overlay label-active">
         <div class="new-label-box">

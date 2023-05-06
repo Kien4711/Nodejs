@@ -34,19 +34,19 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="">
+                    <a href="/starred" class="">
                         <span class="fa fa-star-o"></span>
                         <span>Starred</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="">
+                    <a href="/trash" class="">
                         <span class="fa fa-trash-o"></span>
                         <span>Trash</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="">
+                    <a href="/draft" class="">
                         <span class="fa fa-file"></span>
                         <span>Drafts</span>
                     </a>
@@ -60,7 +60,7 @@
                 </li>
                 <li>
                     <% getLabels.forEach((label)=> { %>
-                        <div class="email-zoom-out">
+                        <div class=" labels-update">
                             <a href="/label/<%=label.nameLabel%>">
                                 <span>
                                     <%= label.nameLabel %>
@@ -69,9 +69,23 @@
                                     <i class="fa fa-ellipsis-v"></i>
                                 </button>
                                 <div class="more-options">
-                                    <button class="edit-btn">Edit</button>
-                                    <button class="delete-btn">Delete</button>
+
+                                    <table>
+                                    <tbody>
+                                        <tr class="edit-btn">
+                                            <td> <a href=""> Edit</a></td>
+                                        </tr>
+                                        <tr class=".empty-btn">
+                                            <td> <a href=""> </a></td>
+                                        </tr>
+                                        <tr class="delete-btn">
+                                            <td> <a href=""></i> Delete</a></td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
                                 </div>
+                                
                             </a>
                         </div>
                         <% }); %>
@@ -107,16 +121,13 @@
                 </label>
                 Compose
             </button>
-
             <form action="/search" method="POST">
                 <div class="search-wrapper">
-                    <span class="fa fa-search"></span>
+                    <span><button type="submit" class="fa fa-search btn-search"></button></span>
                     <input type="search" placeholder="Search here" name="keyword" id="search-input">
                 </div>
-                <button type="submit">Search</button>
             </form>
-
-            <button class="user-wrapper" id="user-wrapper">
+            <button class="user-wrapper">
                 <img src="/images/meiko.png" alt="">
                 <div>
                     <h4>Meiko</h4>
@@ -168,7 +179,7 @@
     <div class="user-menu display-menu-user">
         <table>
             <tbody>
-                <tr class="profile">
+                <tr class="profile-menu">
                     <td> <a href=""><i class="fa fa-user"></i> Profile</a></td>
                 </tr>
                 <tr class="setting">
@@ -211,6 +222,47 @@
                     <button class="btn-create-label" id="create-label-btn"><span>Create</span></button>
                 </div>
             </div>
+        </div>
+    </form>
+
+    <form action="/send-email" method="post" class="search-advance">        
+        <div>
+            <div class="display-flex-search-advance search-from">
+                <span>From</span>
+                <input type="text" name="search-form" id="search-from">
+            </div>
+            <div class="display-flex-search-advance search-to">
+                <span>To</span>
+                <input type="text" name="search-to" id="search-to">
+            </div>
+            <div class="display-flex-search-advance search-subject">
+                <span>Subject</span>
+                <input type="text" name="search-subject" id="search-subject">
+            </div>
+            <div class="display-flex-search-advance search-has-words">
+                <span>Has the words</span>
+                <input type="text" name="search-has-words" id="search-has-words">
+            </div>
+            <div class="display-flex-search-advance search-do-not-words">
+                <span>Doesn't have</span>
+                <input type="text" name="search-do-not-words" id="search-do-not-words">
+            </div>
+            <div class="display-flex-search-advance search-day">
+                <span>Date within</span>
+                <input type="text" name="search-day" id="search-day">
+            </div>
+            <div class="display-flex-search-advance search-page">
+                <span>Search</span>
+                <select name="search-page" id="search-page">
+                    <option value="all-page">All Page</option>
+                    <option value="inbox-page">Inbox</option>
+                    <option value="sent-page">Sent</option>
+                    <option value="starred-page">Starred</option>
+                    <option value="trash-page">Trash</option>
+                    <option value="draft-page">Draft</option>
+                </select>
+            </div>
+            <div class="search-contain-button"><button type="submit" class="btn-search-advance-box">Search</button></div>
         </div>
     </form>
 
