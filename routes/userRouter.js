@@ -105,10 +105,9 @@ router.post("/login", loginValidator, async (req, res) => {
       console.log(message);
       break;
     }
-
     req.flash("error", message);
+    return res.redirect("/login");
 
-    return res.render("/login");
   }
 
   try {
@@ -121,7 +120,6 @@ router.post("/login", loginValidator, async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       req.flash("error", "No user found with this email");
-      
       return res.redirect("/login");
     }
 
@@ -140,7 +138,7 @@ router.post("/login", loginValidator, async (req, res) => {
     });
 
     const getLabels = await getAllLabel(req)
-    req.flash("emailsToUser", emailsToUser);
+  
     res.render("home", { emailsToUser, getLabels });
   } catch (err) {
     return res.status(500).json({ code: 3, message: "Internal server error" });
@@ -197,6 +195,7 @@ router.post("/register", registerValidator, async (req, res) => {
     });
 
     await newUser.save();
+
     return res.redirect("/login");
   } catch (err) {
     console.error(err);
