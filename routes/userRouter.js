@@ -483,7 +483,7 @@ router.post("/edit-profile", async (req, res) => {
     if (!updatedUser) {
       return res.status(404).send("User not found");
     }
-
+/////////////////
     // Update the user in the session
     req.session.user = updatedUser;
     res.redirect("/profile");
