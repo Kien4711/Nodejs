@@ -88,9 +88,6 @@ router.get("/", function (req, res) {
 
 ////////////////////login//////////////////////////////////////////////////////
 router.get("/login", loginValidator, function (req, res) {
-  if (!req.session.isLoggedIn) {
-    res.redirect('login')
-  }
 
   const error = req.flash("error") || "";
 
@@ -114,7 +111,7 @@ router.post("/login", loginValidator, async (req, res) => {
 
     req.flash("error", message);
 
-    return res.redirect("/login");
+    return res.render("/login");
   }
 
   try {
@@ -397,11 +394,12 @@ router.post("/search", async (req, res) => {
     });
 
     console.log(emailsToUser);
-    res.render("home", { emailsToUser });
+    const getLabels = await getAllLabel(req)
+    res.render("home", { emailsToUser, getLabels });
 
 
   } else {
-    res.redirect("/login");
+    res.redirect("");
   }
 });
 
@@ -501,20 +499,7 @@ router.post("/edit-profile", (req, res) => {
   );
 });
 
-router.get('/email/:id', async (req, res) => {
 
-  if (req.session.isLoggedIn) {
-    const emailID = req.params.id;
-    const email = await Email.findById(emailID); {
-    }
-
-    res.render('detailMail', { email });
-  }
-  else {
-    res.redirect("/login");
-  }
-
-});
 
 
 // Render the edit profile page
@@ -542,9 +527,7 @@ router.post("/labels", async (req, res) => {
       const emailsToUser = await Email.find({
         to: { $in: [req.session.user.email] },
       });
-
       req.flash("emailsToUser", emailsToUser);
-
       const getLabels = await getAllLabel(req)
       req.flash("emailsToUser", emailsToUser);
       res.redirect("home");
@@ -559,13 +542,167 @@ router.get("/label/:name", async (req, res) => {
   if (req.session.isLoggedIn) {
     const name = req.params.name;
     console.log()
-    const emailByLabel =  await Email.find({ to: "example@example.com", labels: "label1" })
-    console.log('test '+label)
+    const emailsToUser = await Email.find({
+      labels: { $in: [name] },
+      $or: [
+        { from: req.session.user.email },
+        { to: { $in: [req.session.user.email] } }
+      ]
+    });
+    const getLabels = await getAllLabel(req)
+    res.render("home", { emailsToUser, getLabels });
+  }
+  else {
+    res.redirect("login");
+  }
+})
+
+router.delete('/labels/:name', async (req, res) => {
+  console.log('test delete label')
+  try {
+
+    const labelName = req.params.name;
+    const userEmail = req.session.user.email;
+    console.log(labelName)
+    console.log(userEmail)
+    // Check if the label exists and belongs to the user
+    const existingLabel = await Label.findOne({ user: userEmail, nameLabel: labelName });
+    if (!existingLabel) {
+      return res.status(404).json({ message: 'Label not found' });
+    }
+
+    // Delete the label
+    const deletedLabel = await Label.deleteOne({ user: userEmail, nameLabel: labelName });
+    if (deletedLabel.deletedCount === 0) {
+      return res.status(404).json({ message: 'Label not found' });
+    }
+
+    res.status(200).json(deletedLabel);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+router.post('/labels/update/:name/:newLabel', async (req, res) => {
+  try {
+    const oldLabel = req.params.name;
+    const newLabel = req.params.newLabel;
+
+    const updatedLabel = await Label.updateOne(
+      { user: req.session.user.email, nameLabel: oldLabel }, 
+      { $set: { nameLabel: newLabel } }
+    );
+    
+    res.status(200).json(updatedLabel);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+///// handle email 
+router.get('/email/:id', async (req, res) => {
+
+  if (req.session.isLoggedIn) {
+    const emailID = req.params.id;
+
+    const userName = await User.findOne({ email: req.session.user.email })
+    const emailOriginal = await Email.findById(emailID);
+    const listEmailReply = await Email.find({ parentID: emailID })
+    const emails = [emailOriginal].concat(listEmailReply);
+    const getLabels = await getAllLabel(req)
+
+    res.render('detailMail', { emails, userName ,getLabels});
   }
   else {
     res.redirect("/login");
   }
-})
+});
 
-module.exports = router;  
+
+router.put('/email/:id/label/:labelName', async (req, res) => {
+  try {
+    const email = await Email.findById(req.params.id);
+    email.labels.push(req.params.labelName);
+    await email.save();
+    res.status(200).json(email);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to add label to email" });
+  }
+});
+
+router.post('/emails/:id/delete-label/:label', async (req, res) => {
+  try {
+    const emailId = req.params.id;
+    const label = req.params.label;
+
+    const email = await Email.findOne({ _id: emailId });
+
+    if (!email) {
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    const index = email.labels.indexOf(label);
+
+    if (index === -1) {
+      return res.status(400).json({ message: 'Label not found on email' });
+    }
+
+    email.labels.splice(index, 1);
+
+    await email.save();
+
+    return res.status(200).json({ message: 'Label deleted from email' });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+});
+
+
+
+
+router.post('/email/reply/:id/:newText', async (req, res) => {
+  const emailID = req.params.id;
+  const emailOld = await Email.findById(emailID);
+
+  const userName = await User.findOne({ email: req.session.user.email });
+
+  if (req.session.user.email == emailOld.from) {
+    newEmail = new Email({
+      from: req.session.user.email,
+      to: emailOld.to,
+      subject: emailOld.subject,
+      text: req.params.newText,
+      parentID: emailID
+    });
+    await newEmail.save();
+  }
+
+  for (const recipient of emailOld.to) {
+    if (req.session.user.email == recipient) {
+      newEmail = new Email({
+        from: req.session.user.email,
+        to: emailOld.from,
+        subject: emailOld.subject,
+        text: req.params.newText,
+        parentID: emailID
+      });
+      await newEmail.save();
+    }
+  }
+
+  const emailOriginal = await Email.findById(emailID);
+  const listEmailReply = await Email.find({ parentID: emailID })
+  const emails = [emailOriginal].concat(listEmailReply);
+
+  const getLabels = await getAllLabel(req)
+
+  res.render('detailMail', { emails, userName ,getLabels});
+});
+
+
+
+module.exports = router;
 //test branch
