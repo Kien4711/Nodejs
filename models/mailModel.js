@@ -5,7 +5,7 @@ const emailSchema = new mongoose.Schema({
   to: { type: [String], required: true },
   subject: { type: String},
   text: { type: String},
-  started: { type: Boolean, default: false},
+  stared: { type: Boolean, default: false},
   sentAt: { type: Date, default: Date.now },
   labels: [{ type: String }],
   attachments: [{
