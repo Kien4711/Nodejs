@@ -17,6 +17,10 @@
     const replyMailBox = document.getElementById('reply-mail-box')
     const btnCloseReplyMailBox = document.querySelector('.btn-close-reply-mail-box')
 
+    const btnForwardMail = document.querySelector('.btnDetailMail-forward-main')
+    const forwardMailBox = document.getElementById('forward-mail-box')
+    const btnCloseForwardMailBox = document.querySelector('.btn-close-forward-mail-box')
+
     btnWriteMail.addEventListener('click', () => {
         mailBox.classList.remove("display-mail-box");
     })
@@ -30,6 +34,14 @@
     })
 
     btnCloseReplyMailBox.addEventListener('click', () => {
+      replyMailBox.classList.add("display-mail-box");
+    })
+
+    btnForwardMail.addEventListener('click', () => {
+      replyMailBox.classList.remove("display-mail-box");
+    })
+
+    btnCloseForwardMailBox.addEventListener('click', () => {
       replyMailBox.classList.add("display-mail-box");
     })
 
