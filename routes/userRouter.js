@@ -213,7 +213,7 @@ router.post("/register", registerValidator, async (req, res) => {
     await newUser.save();
     console.log(otp)
     req.flash('success', `Your OTP is ${otp}. Please check your phone.`)
-    alert(`Your OTP is ${otp}. Please check your phone.`)
+    // alert(`Your OTP is ${otp}. Please check your phone.`)
     // return res.redirect("/login");
     return res.redirect('/register/verify-otp')
   } catch (err) {
