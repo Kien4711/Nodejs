@@ -57,7 +57,7 @@
                         </button>
                     </a>
                 </li>
-                
+
                 <li>
                     <% getLabels.forEach((label)=> { %>
                         <div class=" labels-update">
@@ -71,39 +71,62 @@
                                 <div class="more-options">
 
                                     <table>
-                                    <tbody>
-                                        <tr class="edit-btn">
-                                            <td> <a href=""> Edit</a></td>
-                                        </tr>
-                                        <tr class=".empty-btn">
-                                            <td> <a href=""> </a></td>
-                                        </tr>
-                                        <tr class="delete-btn">
-                                            <td> <a href=""></i> Delete</a></td>
-                                        </tr>
+                                        <tbody>
+                                            <tr class="edit-btn">
+                                                <td> <a href="labels/<%=label.nameLabel%>"> Edit</a></td>
+                                            </tr>
+                                            <tr class=".empty-btn">
+                                                <td> <a href=""> </a></td>
+                                            </tr>
+                                            <tr class="delete-btn">
+                                                <a href="#" class="delete-label"
+                                                    data-name="<%=label.nameLabel%>">Delete</a>
+                                            </tr>
 
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
                                 </div>
 
                             </a>
                         </div>
                         <% }); %>
                 </li>
+
+                <script>
+                    // Add event listener to all delete-label links
+                    document.querySelectorAll('.delete-label').forEach(link => {
+                        link.addEventListener('click', (event) => {
+                            event.preventDefault(); // Prevent link from navigating to another page
+                            const name = link.dataset.name; // Get label name from data-name attribute
+                            fetch(`/labels/${name}`, { method: 'DELETE' }) // Send DELETE request to server
+                                .then(response => {
+                                    if (response.ok) {
+                                        console.log('Label deleted!');
+                                        location.reload();
+                                        // Refresh the page or update the UI as needed
+                                    } else {
+                                        console.error('Failed to delete label:', response.statusText);
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        });
+                    });
+
+                </script>
                 <script>
                     function toggleOptions(button, event) {
                         event.preventDefault();
                         const options = button.parentNode.querySelector(".more-options");
                         options.classList.toggle("show");
                     }
-                    
+
                     function toggleMenu(button) {
-                      const options = button.parentNode.querySelector(".more-options");
-                      options.classList.toggle("show");
-                      const editBtn = button.parentNode.querySelector(".edit-btn");
-                      const deleteBtn = button.parentNode.querySelector(".delete-btn");
-                      editBtn.classList.toggle("show");
-                      deleteBtn.classList.toggle("show");
+                        const options = button.parentNode.querySelector(".more-options");
+                        options.classList.toggle("show");
+                        const editBtn = button.parentNode.querySelector(".edit-btn");
+                        const deleteBtn = button.parentNode.querySelector(".delete-btn");
+                        editBtn.classList.toggle("show");
+                        deleteBtn.classList.toggle("show");
                     }
 
                     // const addButton = document.querySelector('.add-draft');
@@ -114,36 +137,37 @@
                     // });
                 </script>
 
-                
+
                 <style>
                     .more-options {
                         display: none;
                     }
-                    
+
                     .more-options.show {
                         display: block;
                     }
-                    
+
                     .more-options.show .edit-btn,
                     .more-options.show .delete-btn {
                         display: block;
                     }
-                    
+
                     .more-options .edit-btn,
                     .more-options .delete-btn {
                         display: none;
                     }
-                    
+
                     .more-options .show {
                         display: block;
                     }
 
                     .sidebar-brand:hover {
                         cursor: pointer;
-                        transform: scale(1.1); /* Tăng kích thước nút lên 10% */
-                        transition: transform 0.2s ease-in-out; /* Tạo hiệu ứng chuyển động mượt mà */
+                        transform: scale(1.1);
+                        /* Tăng kích thước nút lên 10% */
+                        transition: transform 0.2s ease-in-out;
+                        /* Tạo hiệu ứng chuyển động mượt mà */
                     }
-
                 </style>
 
 
@@ -176,53 +200,53 @@
                 <div>
                     <h4>User</h4>
                     <small>User</small>
-                  </div>
-                  
+                </div>
+
             </button>
         </header>
     </div>
 
     <div class="user-menu display-menu-user">
-                <table>
-                    <tbody>
-                        <tr class="profile-routes">
-                            <td> <a href="#" id="profile-link"><i class="fa fa-user"></i> Profile</a></td>
-                        </tr>
-                        <!-- <tr class="setting-routes">
+        <table>
+            <tbody>
+                <tr class="profile-routes">
+                    <td> <a href="#" id="profile-link"><i class="fa fa-user"></i> Profile</a></td>
+                </tr>
+                <!-- <tr class="setting-routes">
                             <td> <a href="" id="setting-link"><i class="fa fa-cog"></i> Setting</a></td>
                         </tr> -->
-                        <tr class="logout-routes">
-                            <td><a href="#" id="logout-link"><i class="fa fa-sign-out"></i> Logout</a></td>
-                        </tr>
-                        
-                    </tbody>
-                </table>
+                <tr class="logout-routes">
+                    <td><a href="#" id="logout-link"><i class="fa fa-sign-out"></i> Logout</a></td>
+                </tr>
+
+            </tbody>
+        </table>
     </div>
     <script>
         const profileLink = document.getElementById("profile-link");
         profileLink.addEventListener("click", () => {
-          // Thực hiện chuyển hướng đến trang profile của người dùng đang đăng nhập
-          window.location.href = "/profile";
+            // Thực hiện chuyển hướng đến trang profile của người dùng đang đăng nhập
+            window.location.href = "/profile";
         });
 
         document.getElementById("logout-link").addEventListener("click", async () => {
-        try {
-            alert('Logout')
-            // Gửi yêu cầu đến máy chủ để xác nhận việc logout
-            await fetch("/logout", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({}),
-            });
-    
-            // Xóa thông tin phiên đăng nhập và chuyển hướng đến trang đăng nhập
-            window.location.href = "/login";
-        } catch (err) {
-            console.error(err);
-            alert("Logout failed");
-        }
+            try {
+                alert('Logout')
+                // Gửi yêu cầu đến máy chủ để xác nhận việc logout
+                await fetch("/logout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({}),
+                });
+
+                // Xóa thông tin phiên đăng nhập và chuyển hướng đến trang đăng nhập
+                window.location.href = "/login";
+            } catch (err) {
+                console.error(err);
+                alert("Logout failed");
+            }
         });
-      </script>
+    </script>
 
     <main class="home-main">
         <div class="sub-header">
@@ -240,11 +264,12 @@
                 </span>
             </span>
         </div>
-        
+
         <% emailsToUser.forEach((email)=> { %>
             <div class="email-zoom-out">
                 <input type="checkbox" name="selected-email" id="checkbox-Selected-Email">
-                <span><button type="button" class="fa fa-star-o btnDetailMail-star" onclick="starEmail('<%= email._id %>')" ondblclick="displayStar('<%= email.isStar %>')"></button></span>
+                <span><button type="button" class="fa fa-star-o btnDetailMail-star"
+                        onclick="starEmail('<%= email._id %>','<%= email.stared %>')"></button></span>
                 <a href="email/<%=email._id%>">
                     <span>
                         <%= email.to %>
@@ -260,7 +285,7 @@
             <% }); %>
                 </div>
     </main>
-    
+
 
     <form id="send-email-form" action="/send-email" method="post" class="send-email-box display-mail-box">
         <button id="close-btn" type="" class="btn-close-mail-box"><i class="fa fa-times"></i></button>
@@ -282,7 +307,7 @@
                 <div class="div-title">
                     <span class="title-label-box">New label</span>
                     <button type="" class="btn-close-label-box"><i class="fa fa-times"></i></button>
-                        <span class="content-label">Please enter a new label name:</span>
+                    <span class="content-label">Please enter a new label name:</span>
                 </div>
 
                 <input type="text" name="name" id="label-input">
@@ -294,23 +319,23 @@
         </div>
     </form>
 
-    <form action="" method="post" class="search-advance display-active ">        
+    <form action="/searchAdvanced" method="post" class="search-advance display-active ">
         <div>
             <div class="display-flex-search-advance search-from">
                 <span>From</span>
-                <input type="text" name="search-form" id="search-from">
+                <input type="text" name="from" id="from">
             </div>
             <div class="display-flex-search-advance search-to">
                 <span>To</span>
-                <input type="text" name="search-to" id="search-to">
+                <input type="text" name="to" id="to">
             </div>
             <div class="display-flex-search-advance search-subject">
                 <span>Subject</span>
-                <input type="text" name="search-subject" id="search-subject">
+                <input type="text" name="subject" id="subject">
             </div>
             <div class="display-flex-search-advance search-has-words">
                 <span>Has the words</span>
-                <input type="text" name="search-has-words" id="search-has-words">
+                <input type="text" name="text" id="text">
             </div>
             <div class="display-flex-search-advance search-page">
                 <span>Search</span>
@@ -323,7 +348,8 @@
                     <option value="draft-page">Draft</option>
                 </select>
             </div>
-            <div class="search-contain-button"><button type="submit" class="btn-search-advance-box">Search</button></div>
+            <div class="search-contain-button"><button type="submit" class="btn-search-advance-box">Search</button>
+            </div>
         </div>
     </form>
 
@@ -362,13 +388,15 @@
     //         console.error("Failed to save email as draft");
     //     }
     // }
-    document.querySelector('.sidebar-brand').addEventListener('click', function() {
-    window.location.href = 'home';
-});
+    document.querySelector('.sidebar-brand').addEventListener('click', function () {
+        window.location.href = 'home';
+    });
 
 
 
 </script>
+
+
 
 <script>
     function starEmail(id, isStar) {
@@ -381,30 +409,25 @@
                 }
             })
             .catch(error => console.error('Error:', error));
-    }
 
-</script>
-
-<script>
-    function displayStar(isStar) {
         const btnDetailMails = document.querySelectorAll('.btnDetailMail-star')
         btnDetailMails.forEach(btnDetailMail => {
             btnDetailMail.addEventListener('click', () => {
                 console.log('test demo')
-            if (isStar) {
-                btnDetailMail.classList.remove('fa-star-o');
-                btnDetailMail.classList.add('fa-star');
-                isStar = false;
-            } else {
-                btnDetailMail.classList.remove('fa-star');
-                btnDetailMail.classList.add('fa-star-o');
-                isStar = true;
-            }
+                if (isStar) {
+                    btnDetailMail.classList.remove('fa-star-o');
+                    btnDetailMail.classList.add('fa-star');
+                    isStar = false;
+                } else {
+                    btnDetailMail.classList.remove('fa-star');
+                    btnDetailMail.classList.add('fa-star-o');
+                    isStar = true;
+                }
             });
         });
     }
-    
 </script>
+
 
 <script>
     const btnDisplaySearchAdvanceBox = document.querySelector('.fa-tasks');
@@ -412,15 +435,16 @@
 
     let isSearchAdvanceBoxOpen = false;
     btnDisplaySearchAdvanceBox.addEventListener('click', () => {
-      if (isSearchAdvanceBoxOpen) {
-        searchAdvanceBox.classList.remove('display-active');
-        isSearchAdvanceBoxOpen = false;
-      } else {
-        searchAdvanceBox.classList.add('display-active');
-        isSearchAdvanceBoxOpen = true;
-      }
+        if (isSearchAdvanceBoxOpen) {
+            searchAdvanceBox.classList.remove('display-active');
+            isSearchAdvanceBoxOpen = false;
+        } else {
+            searchAdvanceBox.classList.add('display-active');
+            isSearchAdvanceBoxOpen = true;
+        }
     });
 </script>
+
 
 <script>
     const btnLabel = document.querySelector('.btn-label')
@@ -431,11 +455,11 @@
     btnLabel.addEventListener('click', () => {
         labelBox.classList.remove('label-active')
     })
-  
+
     btnCloseLabelBox.addEventListener('click', () => {
         labelBox.classList.add('label-active')
     })
-  
+
     btnCancelLabelBox.addEventListener('click', () => {
         labelBox.classList.add('label-active')
     })

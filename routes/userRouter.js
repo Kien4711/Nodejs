@@ -804,10 +804,67 @@ router.post('/star/:id', async (req,res) => {
     email.stared = !email.stared;
     await email.save();
     res.send(email);
+    console.log(email)
   }
   else {
     res.redirect("/login");
     console.log("error");
+  }
+})
+
+router.post("/search", async (req, res) => {
+  if (req.session.isLoggedIn) {
+    console.log("demo");
+    const { keyword } = req.body;
+
+    const emailsToUser = await Email.find({
+      $and: [
+        {
+          $or: [
+            { from: { $regex: keyword, $options: "i" } },
+            { to: { $regex: keyword, $options: "i" } },
+          ],
+        },
+        {
+          $or: [
+            { subject: { $regex: keyword, $options: "i" } },
+            { text: { $regex: keyword, $options: "i" } },
+            { to: { $elemMatch: { $regex: keyword, $options: "i" } } },
+          ],
+        },
+        ,
+      ],
+    });
+
+    const getLabels = await getAllLabel(req);
+    res.render("home", { emailsToUser, getLabels });
+  } else {
+    res.redirect("");
+  }
+});
+
+
+router.post('/searchAdvanced',async(req,res) => {
+  const {from,to,subject,text} = req.body
+  {
+    const emailsToUser = await Email.find({
+      $and: [
+        {
+          $and: [
+            { from: { $regex: from, $options: "i" } },
+            { to: { $regex: to, $options: "i" } },
+          ],
+        },
+        {
+          $and: [
+            { subject: { $regex: subject, $options: "i" } },
+            { text: { $regex: text, $options: "i" } },
+          ],
+        },
+      ],
+    });
+    const getLabels = await getAllLabel(req);
+    res.render("home", { emailsToUser, getLabels});
   }
 })
 
