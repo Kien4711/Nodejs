@@ -780,5 +780,37 @@ router.post('/email/reply/:id', async (req, res) => {
   res.render('detailMail', { emails, userName, getLabels });
 });
 
+router.get('/star',async (req,res) => {
+  if (req.session.isLoggedIn) {
+    const emailsToUser = await Email.find({
+      $or: [
+        { to: { $in: [req.session.user.email] } },
+        { from: req.session.user.email }
+      ],
+      stared: true
+    });
+    const getLabels = await getAllLabel(req)
+
+    res.render("home", { emailsToUser, getLabels });
+  } else {
+    res.redirect("/login");
+    console.log("error");
+  }
+})
+
+router.post('/star/:id', async (req,res) => {
+  if (req.session.isLoggedIn) {
+    const email = await Email.findOne({ _id: req.params.id });
+    email.stared = !email.stared;
+    await email.save();
+    res.send(email);
+  }
+  else {
+    res.redirect("/login");
+    console.log("error");
+  }
+})
+
+
 module.exports = router
 //test branch

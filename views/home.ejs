@@ -33,7 +33,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/starred" class="">
+                    <a href="/star" class="">
                         <span class="fa fa-star-o"></span>
                         <span>Starred</span>
                     </a>
@@ -167,7 +167,6 @@
                     <span><button type="submit" class="fa fa-search btn-search"></button></span>
                     <input type="search" placeholder="Search here" name="keyword" id="search-input">
                 </div>
-                <button type="button" class="fa fa-tasks"></button>
             </form>
 
 
@@ -244,9 +243,8 @@
         <% emailsToUser.forEach((email)=> { %>
             <div class="email-zoom-out">
                 <input type="checkbox" name="selected-email" id="checkbox-Selected-Email">
-                <span><button type="button" class="fa fa-star-o btnDetailMail-star"></button></span>
+                <span><button type="button" class="fa fa-star-o btnDetailMail-star" onclick="starEmail('<%= email._id %>')"></button></span>
                 <a href="email/<%=email._id%>">
-
                     <span>
                         <%= email.to %>
                     </span>
@@ -258,7 +256,8 @@
                     </span>
                 </a>
             </div>
-        <% }); %>
+            <% }); %>
+                </div>
     </main>
     
 
@@ -294,8 +293,8 @@
             </div>
         </div>
     </form>
-<!-- ////////////////////////form-search advantage//////////////////////////// -->
-    <form action="" method="post" class="search-advance">        
+
+    <!-- <form action="" method="post" class="search-advance">        
         <div>
             <div class="display-flex-search-advance search-from">
                 <span>From</span>
@@ -334,7 +333,7 @@
             </div>
             <div class="search-contain-button"><button type="submit" class="btn-search-advance-box">Search</button></div>
         </div>
-    </form>
+    </form> -->
 
 
 </body>
@@ -374,6 +373,37 @@
     document.querySelector('.sidebar-brand').addEventListener('click', function() {
     window.location.href = 'home';
 });
+
+const btnDetailMails = document.querySelectorAll('.btnDetailMail-star')
+let isStar = false;
+btnDetailMails.forEach(btnDetailMail => {
+    btnDetailMail.addEventListener('click', () => {
+      if (isStar) {
+        btnDetailMail.classList.remove('fa-star-o');
+        btnDetailMail.classList.add('fa-star');
+        isStar = false;
+      } else {
+        btnDetailMail.classList.remove('fa-star');
+        btnDetailMail.classList.add('fa-star-o');
+        isStar = true;
+      }
+    });
+  });
+
+</script>
+
+<script>
+    function starEmail(id) {
+        fetch(`/star/${id}`, { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Email starred!');
+                } else {
+                    console.error('Failed to star email:', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
 </script>
 
