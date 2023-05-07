@@ -8,6 +8,7 @@ const emailSchema = new mongoose.Schema({
   stared: { type: Boolean, default: false},
   sentAt: { type: Date, default: Date.now },
   labels: { type: [String] },
+  isStar: { type: Boolean, default: false},
   attachments: [{
     fileName: { type: String},
     contentType: { type: String},

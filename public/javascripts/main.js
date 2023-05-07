@@ -2,12 +2,6 @@
   const btnWriteMail = document.querySelector('.btn-write-Email');
   const btnCloseMailBox = document.querySelector('.btn-close-mail-box');
   const mailBox = document.querySelector('.send-email-box');
-  
-  
-  const btnLabel = document.querySelector('.btn-label')
-  const labelBox = document.querySelector('.container-label-box')
-  const btnCloseLabelBox = document.querySelector('.btn-close-label-box')
-  const btnCancelLabelBox = document.querySelector('.btn-cancel-label')
 
   const mailCards = document.querySelectorAll('.email-zoom-out');
   const optionMail = document.querySelector('.option-email')
@@ -23,8 +17,7 @@
   const forwardMailBox = document.getElementById('forward-mail-box')
   const btnCloseForwardMailBox = document.querySelector('.btn-close-forward-mail-box')
 
-  const btnDisplaySearchAdvanceBox = document.querySelector('.search-wrapper .fa-tasks');
-  const searchAdvanceBox = document.querySelector('.search-advance');
+
       
   const btnMoreOptionLabels = document.querySelector('.more-btn');
   const moreOptionLabelsBox = document.querySelector('.more-options');
@@ -81,17 +74,7 @@ btnUser.addEventListener('click', () => {
     }
   });
 
-  btnLabel.addEventListener('click', () => {
-      labelBox.classList.remove('label-active')
-  })
 
-  btnCloseLabelBox.addEventListener('click', () => {
-      labelBox.classList.add('label-active')
-  })
-
-  btnCancelLabelBox.addEventListener('click', () => {
-      labelBox.classList.add('label-active')
-  })
 
   const fileInput = document.getElementById('fileInput')
   fileInput.addEventListener('change', (event) => {
@@ -101,35 +84,14 @@ btnUser.addEventListener('click', () => {
   })
 
 
-    let isStar = false;
-    btnDetailMail.addEventListener('click', () => {
-        if(isStar) {
-            btnDetailMail.classList.remove('fa-star-o');
-            btnDetailMail.classList.add('fa-star')
-            isStar = false;
-        }
-        else {
-            btnDetailMail.classList.remove('fa-star');
-            btnDetailMail.classList.add('fa-star-o')
-            isStar = true;
-        }
-    })
+
 
 
 
 
     ////////////////////////Search Advance ////////////////////////
 
-    let isSearchAdvanceBoxOpen = false;
-    btnDisplaySearchAdvanceBox.addEventListener('click', () => {
-      if (isSearchAdvanceBoxOpen) {
-        searchAdvanceBox.style.display = 'none';
-        isSearchAdvanceBoxOpen = false;
-      } else {
-        searchAdvanceBox.style.display = 'block';
-        isSearchAdvanceBoxOpen = true;
-      }
-    });
+
   
     //////////////////////////////////////////////////////////////
 

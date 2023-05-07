@@ -166,6 +166,7 @@
                 <div class="search-wrapper">
                     <span><button type="submit" class="fa fa-search btn-search"></button></span>
                     <input type="search" placeholder="Search here" name="keyword" id="search-input">
+                    <button type="button" class="fa fa-tasks"></button>
                 </div>
             </form>
 
@@ -243,7 +244,7 @@
         <% emailsToUser.forEach((email)=> { %>
             <div class="email-zoom-out">
                 <input type="checkbox" name="selected-email" id="checkbox-Selected-Email">
-                <span><button type="button" class="fa fa-star-o btnDetailMail-star" onclick="starEmail('<%= email._id %>')"></button></span>
+                <span><button type="button" class="fa fa-star-o btnDetailMail-star" onclick="starEmail('<%= email._id %>')" ondblclick="displayStar('<%= email.isStar %>')"></button></span>
                 <a href="email/<%=email._id%>">
                     <span>
                         <%= email.to %>
@@ -281,10 +282,9 @@
                 <div class="div-title">
                     <span class="title-label-box">New label</span>
                     <button type="" class="btn-close-label-box"><i class="fa fa-times"></i></button>
+                        <span class="content-label">Please enter a new label name:</span>
                 </div>
-                <div class="content-label">
-                    <span>Please enter a new label name:</span>
-                </div>
+
                 <input type="text" name="name" id="label-input">
                 <div class="container-btn">
                     <button class="btn-cancel-label"><span>Cancel</span></button>
@@ -294,7 +294,7 @@
         </div>
     </form>
 
-    <!-- <form action="" method="post" class="search-advance">        
+    <form action="" method="post" class="search-advance display-active ">        
         <div>
             <div class="display-flex-search-advance search-from">
                 <span>From</span>
@@ -312,14 +312,6 @@
                 <span>Has the words</span>
                 <input type="text" name="search-has-words" id="search-has-words">
             </div>
-            <div class="display-flex-search-advance search-do-not-words">
-                <span>Doesn't have</span>
-                <input type="text" name="search-do-not-words" id="search-do-not-words">
-            </div>
-            <div class="display-flex-search-advance search-day">
-                <span>Date within</span>
-                <input type="text" name="search-day" id="search-day">
-            </div>
             <div class="display-flex-search-advance search-page">
                 <span>Search</span>
                 <select name="search-page" id="search-page">
@@ -333,7 +325,7 @@
             </div>
             <div class="search-contain-button"><button type="submit" class="btn-search-advance-box">Search</button></div>
         </div>
-    </form> -->
+    </form>
 
 
 </body>
@@ -374,26 +366,12 @@
     window.location.href = 'home';
 });
 
-const btnDetailMails = document.querySelectorAll('.btnDetailMail-star')
-let isStar = false;
-btnDetailMails.forEach(btnDetailMail => {
-    btnDetailMail.addEventListener('click', () => {
-      if (isStar) {
-        btnDetailMail.classList.remove('fa-star-o');
-        btnDetailMail.classList.add('fa-star');
-        isStar = false;
-      } else {
-        btnDetailMail.classList.remove('fa-star');
-        btnDetailMail.classList.add('fa-star-o');
-        isStar = true;
-      }
-    });
-  });
+
 
 </script>
 
 <script>
-    function starEmail(id) {
+    function starEmail(id, isStar) {
         fetch(`/star/${id}`, { method: 'POST' })
             .then(response => {
                 if (response.ok) {
@@ -405,6 +383,62 @@ btnDetailMails.forEach(btnDetailMail => {
             .catch(error => console.error('Error:', error));
     }
 
+</script>
+
+<script>
+    function displayStar(isStar) {
+        const btnDetailMails = document.querySelectorAll('.btnDetailMail-star')
+        btnDetailMails.forEach(btnDetailMail => {
+            btnDetailMail.addEventListener('click', () => {
+                console.log('test demo')
+            if (isStar) {
+                btnDetailMail.classList.remove('fa-star-o');
+                btnDetailMail.classList.add('fa-star');
+                isStar = false;
+            } else {
+                btnDetailMail.classList.remove('fa-star');
+                btnDetailMail.classList.add('fa-star-o');
+                isStar = true;
+            }
+            });
+        });
+    }
+    
+</script>
+
+<script>
+    const btnDisplaySearchAdvanceBox = document.querySelector('.fa-tasks');
+    const searchAdvanceBox = document.querySelector('.search-advance');
+
+    let isSearchAdvanceBoxOpen = false;
+    btnDisplaySearchAdvanceBox.addEventListener('click', () => {
+      if (isSearchAdvanceBoxOpen) {
+        searchAdvanceBox.classList.remove('display-active');
+        isSearchAdvanceBoxOpen = false;
+      } else {
+        searchAdvanceBox.classList.add('display-active');
+        isSearchAdvanceBoxOpen = true;
+      }
+    });
+</script>
+
+<script>
+    const btnLabel = document.querySelector('.btn-label')
+    const labelBox = document.querySelector('.container-label-box')
+    const btnCloseLabelBox = document.querySelector('.btn-close-label-box')
+    const btnCancelLabelBox = document.querySelector('.btn-cancel-label')
+
+    btnLabel.addEventListener('click', () => {
+        labelBox.classList.remove('label-active')
+    })
+  
+    btnCloseLabelBox.addEventListener('click', () => {
+        labelBox.classList.add('label-active')
+    })
+  
+    btnCancelLabelBox.addEventListener('click', () => {
+        labelBox.classList.add('label-active')
+    })
 </script>
 
 

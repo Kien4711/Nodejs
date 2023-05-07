@@ -700,6 +700,7 @@ input[type="text"]:focus-visible, textarea:focus-visible {
 .more-btn {
   color: black;
   background-color: #A7C8F7 !important;
+  border: none;
 }
 
 .labels-update:hover {
@@ -843,8 +844,7 @@ i.fa.fa-times {
 .title-label-box {
   font-size: 25px;
   font-weight: 600;
-  margin-left: 20px;
-  padding-bottom: 20px;
+  padding: 20px;
 }
 
 .content-label {
@@ -853,8 +853,8 @@ i.fa.fa-times {
 
 .new-label-box input {
   outline: solid 1px rgb(120, 120, 120);
-  width: 80%;
-  padding-left: 20px;
+  width: 92%;
+  padding-left: 20px !important;
   margin-left: 20px;
   border-radius: 3px;
 }
@@ -914,6 +914,8 @@ i.fa.fa-times {
 
 .div-title {
   padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .label-active {
@@ -1291,7 +1293,7 @@ i.fa.fa-times {
 }
 
 .fa-star {
-  color: #e5e53e !important;
+  color: #e8e800 !important;
 }
 
 .email-zoom-out button {
