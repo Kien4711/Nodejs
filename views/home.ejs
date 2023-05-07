@@ -58,6 +58,10 @@
                         </button>
                     </a>
                 </li>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
                 <li>
                     <% getLabels.forEach((label)=> { %>
                         <div class="email-zoom-out">
@@ -69,8 +73,26 @@
                                     <i class="fa fa-ellipsis-v"></i>
                                 </button>
                                 <div class="more-options">
+<<<<<<< Updated upstream
                                     <button class="edit-btn">Edit</button>
                                     <button class="delete-btn">Delete</button>
+=======
+
+                                    <table>
+                                        <tbody>
+                                            <tr class="edit-btn">
+                                                <td> <a href=""> Edit</a></td>
+                                            </tr>
+                                            <tr class=".empty-btn">
+                                                <td> <a href=""> </a></td>
+                                            </tr>
+                                            <tr class="delete-btn">
+                                                <td> <a href=""></i> Delete</a></td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+>>>>>>> Stashed changes
                                 </div>
                             </a>
                         </div>
@@ -81,8 +103,30 @@
                         const options = button.parentNode.querySelector(".more-options");
                         options.classList.toggle("show");
                     }
+<<<<<<< Updated upstream
                 </script>
 
+=======
+
+                    function toggleMenu(button) {
+                        const options = button.parentNode.querySelector(".more-options");
+                        options.classList.toggle("show");
+                        const editBtn = button.parentNode.querySelector(".edit-btn");
+                        const deleteBtn = button.parentNode.querySelector(".delete-btn");
+                        editBtn.classList.toggle("show");
+                        deleteBtn.classList.toggle("show");
+                    }
+
+                    // const addButton = document.querySelector('.add-draft');
+
+                    // addButton.addEventListener('click', function() {
+                    // const labelForm = document.querySelector('.container-label-box');
+                    // labelForm.classList.add('label-active');
+                    // });
+                </script>
+
+
+>>>>>>> Stashed changes
                 <style>
                     .more-options {
                         display: none;
@@ -91,6 +135,31 @@
                     .more-options.show {
                         display: block;
                     }
+<<<<<<< Updated upstream
+=======
+
+                    .more-options.show .edit-btn,
+                    .more-options.show .delete-btn {
+                        display: block;
+                    }
+
+                    .more-options .edit-btn,
+                    .more-options .delete-btn {
+                        display: none;
+                    }
+
+                    .more-options .show {
+                        display: block;
+                    }
+
+                    .sidebar-brand:hover {
+                        cursor: pointer;
+                        transform: scale(1.1);
+                        /* Tăng kích thước nút lên 10% */
+                        transition: transform 0.2s ease-in-out;
+                        /* Tạo hiệu ứng chuyển động mượt mà */
+                    }
+>>>>>>> Stashed changes
                 </style>
 
 
@@ -112,6 +181,7 @@
                 <div class="search-wrapper">
                     <span class="fa fa-search"></span>
                     <input type="search" placeholder="Search here" name="keyword" id="search-input">
+                    <button type="button" class="fa fa-tasks"></button>
                 </div>
                 <button type="submit">Search</button>
             </form>
@@ -122,11 +192,59 @@
                     <h4>Meiko</h4>
                     <small>User</small>
                 </div>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
             </button>
         </header>
     </div>
 
+<<<<<<< Updated upstream
 
+=======
+    <div class="user-menu display-menu-user">
+        <table>
+            <tbody>
+                <tr class="profile-routes">
+                    <td> <a href="#" id="profile-link"><i class="fa fa-user"></i> Profile</a></td>
+                </tr>
+                <!-- <tr class="setting-routes">
+                            <td> <a href="" id="setting-link"><i class="fa fa-cog"></i> Setting</a></td>
+                        </tr> -->
+                <tr class="logout-routes">
+                    <td><a href="#" id="logout-link"><i class="fa fa-sign-out"></i> Logout</a></td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <script>
+        const profileLink = document.getElementById("profile-link");
+        profileLink.addEventListener("click", () => {
+            // Thực hiện chuyển hướng đến trang profile của người dùng đang đăng nhập
+            window.location.href = "/profile";
+        });
+
+        document.getElementById("logout-link").addEventListener("click", async () => {
+            try {
+                alert('Logout')
+                // Gửi yêu cầu đến máy chủ để xác nhận việc logout
+                await fetch("/logout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({}),
+                });
+
+                // Xóa thông tin phiên đăng nhập và chuyển hướng đến trang đăng nhập
+                window.location.href = "/login";
+            } catch (err) {
+                console.error(err);
+                alert("Logout failed");
+            }
+        });
+    </script>
+>>>>>>> Stashed changes
 
     <main class="home-main">
         <div class="sub-header">
@@ -148,7 +266,12 @@
         <% emailsToUser.forEach((email)=> { %>
             <div class="email-zoom-out">
                 <input type="checkbox" name="selected-email" id="checkbox-Selected-Email">
+<<<<<<< Updated upstream
                 <span><button type="button" class="fa fa-star-o btnDetailMail-star"></button></span>
+=======
+                <span><button type="button" class="fa fa-star-o btnDetailMail-star"
+                        onclick="starEmail('<%= email._id %>','<%= email.stared %>')"></button></span>
+>>>>>>> Stashed changes
                 <a href="email/<%=email._id%>">
 
                     <span>
@@ -165,6 +288,7 @@
             <% }); %>
                 </div>
     </main>
+<<<<<<< Updated upstream
     <div class="user-menu display-menu-user">
         <table>
             <tbody>
@@ -180,6 +304,9 @@
             </tbody>
         </table>
     </div>
+=======
+
+>>>>>>> Stashed changes
 
     <form id="send-email-form" action="/send-email" method="post" class="send-email-box display-mail-box">
         <button id="close-btn" type="" class="btn-close-mail-box"><i class="fa fa-times"></i></button>
@@ -214,6 +341,42 @@
         </div>
     </form>
 
+<<<<<<< Updated upstream
+=======
+    <form action="" method="post" class="search-advance display-active">        
+        <div>
+            <div class="display-flex-search-advance search-from">
+                <span>From</span>
+                <input type="text" name="search-form" id="search-from">
+            </div>
+            <div class="display-flex-search-advance search-to">
+                <span>To</span>
+                <input type="text" name="search-to" id="search-to">
+            </div>
+            <div class="display-flex-search-advance search-subject">
+                <span>Subject</span>
+                <input type="text" name="search-subject" id="search-subject">
+            </div>
+            <div class="display-flex-search-advance search-has-words">
+                <span>Has the words</span>
+                <input type="text" name="search-has-words" id="search-has-words">
+            </div>
+            <div class="display-flex-search-advance search-page">
+                <span>Search</span>
+                <select name="search-page" id="search-page">
+                    <option value="all-page">All Page</option>
+                    <option value="inbox-page">Inbox</option>
+                    <option value="sent-page">Sent</option>
+                    <option value="starred-page">Starred</option>
+                    <option value="trash-page">Trash</option>
+                    <option value="draft-page">Draft</option>
+                </select>
+            </div>
+            <div class="search-contain-button"><button type="submit" class="btn-search-advance-box">Search</button></div>
+        </div>
+    </form>
+
+>>>>>>> Stashed changes
 
 </body>
 <script type="text/javascript" src="/javascripts/main.js"></script>
@@ -249,7 +412,93 @@
     //         console.error("Failed to save email as draft");
     //     }
     // }
+<<<<<<< Updated upstream
+=======
+    document.querySelector('.sidebar-brand').addEventListener('click', function () {
+        window.location.href = 'home';
+    });
+
+
+
+</script>
+
+<script>
+    function starEmail(id, isStar) {
+        fetch(`/star/${id}`, { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Email starred!');
+                } else {
+                    console.error('Failed to star email:', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+
+        const btnDetailMails = document.querySelectorAll('.btnDetailMail-star')
+        btnDetailMails.forEach(btnDetailMail => {
+            btnDetailMail.addEventListener('click', () => {
+                console.log('test demo')
+                if (isStar) {
+                    btnDetailMail.classList.remove('fa-star-o');
+                    btnDetailMail.classList.add('fa-star');
+                    isStar = false;
+                } else {
+                    btnDetailMail.classList.remove('fa-star');
+                    btnDetailMail.classList.add('fa-star-o');
+                    isStar = true;
+                }
+            });
+        });
+    }
+</script>
+
+</script>
+
+<script>
+    function displayStar(isStar) {
+        const btnDetailMails = document.querySelectorAll('.btnDetailMail-star')
+        btnDetailMails.forEach(btnDetailMail => {
+            btnDetailMail.addEventListener('click', () => {
+            });
+        });
+    }
+
+>>>>>>> Stashed changes
+</script>
+
+<script>
+  const btnLabel = document.querySelector('.btn-label')
+  const labelBox = document.querySelector('.container-label-box')
+  const btnCloseLabelBox = document.querySelector('.btn-close-label-box')
+  const btnCancelLabelBox = document.querySelector('.btn-cancel-label')
+
+    btnLabel.addEventListener('click', () => {
+      labelBox.classList.remove('display-active')
+  })
+
+  btnCloseLabelBox.addEventListener('click', () => {
+      labelBox.classList.add('display-active')
+  })
+
+  btnCancelLabelBox.addEventListener('click', () => {
+      labelBox.classList.add('display-active')
+  })
 </script>
 
 
+<script>
+  const btnDisplaySearchAdvanceBox = document.querySelector('.fa-tasks');
+  const searchAdvanceBox = document.querySelector('.search-advance');
+
+  let isSearchAdvanceBoxOpen = false;
+    btnDisplaySearchAdvanceBox.addEventListener('click', () => {
+      if (isSearchAdvanceBoxOpen) {
+        searchAdvanceBox.classList.remove('display-active');
+        isSearchAdvanceBoxOpen = false;
+      } else {
+        searchAdvanceBox.classList.add('display-active');
+        isSearchAdvanceBoxOpen = true;
+      }
+    });
+</script>
 </html>
