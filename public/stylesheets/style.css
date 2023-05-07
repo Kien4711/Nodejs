@@ -1863,3 +1863,85 @@ form#forward-mail-box {
       border-radius: 10px;
       text-transform: capitalize;
 }
+/* -------------------------------------------------edit label ------------------------------------------ */
+#edit-label-input {
+  outline: solid 1px rgb(120, 120, 120);
+  width: 92%;
+  padding-left: 20px !important;
+  margin-left: 20px;
+  border-radius: 3px;
+}
+
+.new-label-box .btn-close-label-box {
+  padding: 10px;
+  width: 15px !important;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  height: 15px !important;
+  background-color: #fff;
+  border: none;
+}
+
+.container-label-box {display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 100;
+  position: fixed;
+  justify-content: center;
+}
+
+.btn-cancel-label {
+  width: 15px;
+  position: absolute;
+  bottom: 10px;
+  color: rgb(0, 0, 0);
+  background-color: #fff;
+  right: 110px;
+  border: none;
+  height: 40px;
+}
+
+.btn-edit-label {
+  width: 15px;
+  position: absolute;
+  bottom: 10px;
+  background-color: #1291e9;
+  right: 10px;
+  border: none;
+  height: 40px;
+}
+
+.container-edit-label-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 100;
+  position: fixed;
+  justify-content: center;
+}
+
+.btn-close-edit-label-box {
+  padding: 10px;
+  width: 15px !important;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  height: 15px !important;
+  background-color: #fff;
+  border: none;
+}
+
+.btn-cancel-edit-label {
+  width: 15px;
+  position: absolute;
+  bottom: 10px;
+  color: rgb(0, 0, 0);
+  background-color: #fff;
+  right: 110px;
+  border: none;
+  display: flex;
+  height: 40px;
+  flex-direction: column;
+  align-items: center;
+}

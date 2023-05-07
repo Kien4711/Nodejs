@@ -69,11 +69,10 @@
                                     <i class="fa fa-ellipsis-v"></i>
                                 </button>
                                 <div class="more-options">
-
                                     <table>
                                         <tbody>
                                             <tr class="edit-btn">
-                                                <td> <a href="labels/<%=label.nameLabel%>"> Edit</a></td>
+                                                <td> </td>
                                             </tr>
                                             <tr class=".empty-btn">
                                                 <td> <a href=""> </a></td>
@@ -82,12 +81,12 @@
                                                 <a href="#" class="delete-label"
                                                     data-name="<%=label.nameLabel%>">Delete</a>
                                             </tr>
-
+    
                                         </tbody>
                                     </table>
                                 </div>
-
                             </a>
+                            <a  class="a-edit-label"> Edit</a>
                         </div>
                         <% }); %>
                 </li>
@@ -310,10 +309,28 @@
                     <span class="content-label">Please enter a new label name:</span>
                 </div>
 
-                <input type="text" name="name" id="label-input">
+                <input type="text" name="name" id="edit-label-input">
                 <div class="container-btn">
                     <button class="btn-cancel-label"><span>Cancel</span></button>
                     <button class="btn-create-label" id="create-label-btn"><span>Create</span></button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form action="#" method="post">
+        <div class="container-edit-label-box overlay label-active">
+            <div class="new-label-box">
+                <div class="div-title">
+                    <span class="title-label-box">Edit label</span>
+                    <button type="" class="btn-close-edit-label-box"><i class="fa fa-times"></i></button>
+                    <span class="content-label">Please enter label name:</span>
+                </div>
+
+                <input type="text" name="name" id="edit-label-input">
+                <div class="container-btn">
+                    <button class="btn-cancel-edit-label"><span>Cancel</span></button>
+                    <button class="btn-create-label" id="create-label-btn"><span>Edit</span></button>
                 </div>
             </div>
         </div>
@@ -462,6 +479,25 @@
 
     btnCancelLabelBox.addEventListener('click', () => {
         labelBox.classList.add('label-active')
+    })
+</script>
+
+<script>
+    const aEditBtnLabel = document.querySelector('.a-edit-label')
+    const editLabelBox = document.querySelector('.container-edit-label-box')
+    const btnCloseEditLabelBox = document.querySelector('.btn-close-edit-label-box')
+    const btnCancelEditLabelBox = document.querySelector('.btn-cancel-edit-label')
+
+    aEditBtnLabel.addEventListener('click', () => {
+        editLabelBox.classList.remove('label-active')
+    })
+
+    btnCloseEditLabelBox.addEventListener('click', () => {
+        editLabelBox.classList.add('label-active')
+    })
+
+    btnCancelEditLabelBox.addEventListener('click', () => {
+        editLabelBox.classList.add('label-active')
     })
 </script>
 
